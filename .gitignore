@@ -1,0 +1,10 @@
+/backend/node_modules
+/frontend/node_modules
+/backend/package-lock.json
+/frontend/package-lock.json
+/HTML-CSS
+/backend/.env
+/backend/.env.test
+/backend/.env.development
+/backend/.env.production
+WWO_Tradeworks.code-workspace
