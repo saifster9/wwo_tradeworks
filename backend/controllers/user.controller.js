@@ -1,25 +1,33 @@
 const User = require('../models/user.model');
 const LoginAttempt = require('../models/login_attempt.model'); // Import the LoginAttempt model
+const UserBalance = require('../models/user_balance.model'); // Import the UserBalance model
 const bcrypt = require('bcryptjs');
 
 exports.register = async (req, res) => {
     const { username, password, firstName, lastName, email, phoneNumber, isAdmin } = req.body;
     try {
-      const hashedPassword = await bcrypt.hash(password, 10);
-      const newUser = await User.create({
-        username,
-        password: hashedPassword,
-        firstName,
-        lastName,
-        email,
-        phoneNumber,
-        isAdmin: isAdmin || false
-      });
-      res.status(201).json({ message: 'User registered successfully', user: newUser });
+        const hashedPassword = await bcrypt.hash(password, 10);
+        const newUser = await User.create({
+            username,
+            password: hashedPassword,
+            firstName,
+            lastName,
+            email,
+            phoneNumber,
+            isAdmin: isAdmin || false
+        });
+
+        // Create a user balance record with initial cash_balance of 0.00
+        await UserBalance.create({
+            userId: newUser.id,
+            cash_balance: 0.00,
+        });
+
+        res.status(201).json({ message: 'User registered successfully', user: newUser });
     } catch (error) {
-      res.status(500).json({ message: 'Error registering user', error });
+        res.status(500).json({ message: 'Error registering user', error });
     }
-  };
+};
 
 exports.login = async (req, res) => {
     const { username, password } = req.body;
