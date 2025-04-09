@@ -29,6 +29,9 @@ function Login({ isAdmin }) {
 
             // Store the user' first name in localStorage
             localStorage.setItem('firstName', response.data.firstName);
+
+            // Store the user ID in localStorage (if needed)
+            localStorage.setItem('userId', response.data.userId);
             
             navigate(isAdmin ? '/admin-dashboard' : '/user-dashboard');
         } catch (err) {

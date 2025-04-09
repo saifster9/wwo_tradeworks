@@ -1,4 +1,3 @@
-// backend/routes/userBalance.routes.js
 const express = require('express');
 const router = express.Router();
 const userBalanceController = require('../controllers/userBalance.controller');

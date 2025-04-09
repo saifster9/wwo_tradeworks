@@ -1,13 +1,13 @@
 import React, { useState, useEffect } from 'react';
-  import axios from 'axios';
-  import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Import useNavigate
 
   function UserDashboard() {
       const [firstName, setFirstName] = useState('');
       const [portfolio, setPortfolio] = useState([]);
       const [transactions, setTransactions] = useState([]);
       const navigate = useNavigate(); // Initialize navigate
-      const userId = 1; // Replace with the actual way to get the logged-in user's ID
+      const userId = localStorage.getItem('userId');
 
       useEffect(() => {
           const fetchUserData = async () => {
@@ -19,12 +19,12 @@ import React, { useState, useEffect } from 'react';
                   }
 
                   // Fetch portfolio data
-                  const portfolioResponse = await axios.get(`http://localhost:5000/api/users/${userId}/portfolio`);
-                  setPortfolio(portfolioResponse.data);
+//                  const portfolioResponse = await axios.get(`http://localhost:5000/api/users/${userId}/portfolio`);
+//                  setPortfolio(portfolioResponse.data);
 
                   // Fetch transaction history
-                  const transactionsResponse = await axios.get(`http://localhost:5000/api/users/${userId}/transactions`);
-                  setTransactions(transactionsResponse.data);
+//                  const transactionsResponse = await axios.get(`http://localhost:5000/api/users/${userId}/transactions`);
+//                  setTransactions(transactionsResponse.data);
 
               } catch (error) {
                   console.error('Error fetching user data:', error);
