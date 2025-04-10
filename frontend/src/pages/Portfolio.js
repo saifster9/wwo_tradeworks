@@ -2,6 +2,7 @@ import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import '../styles/new_styles.css';
 import { UserContext } from '../context/UserContext';
+import Select from 'react-select';
 
 function Portfolio() {
   const { user } = useContext(UserContext);
@@ -129,6 +130,11 @@ function Portfolio() {
     }
   };
 
+  const stockOptions = stocks.map(s => ({
+    value: s.id,
+    label: `${s.stockTicker} - ${s.companyName} (Avail: ${s.totalSharesAvailable})`
+  }));
+
   return (
     <div className="dashboard-container">
       <h2>{firstName}'s Portfolio</h2>
@@ -182,18 +188,17 @@ function Portfolio() {
         {stockWarning && <p className="error-message">{stockWarning}</p>}
 
         <form onSubmit={handleStockSubmit} className="flex-form">
-          <select
-            value={selectedStock}
-            onChange={e => setSelectedStock(e.target.value)}
-            required
-          >
-            <option value="">-- Select Stock --</option>
-            {stocks.map(s => (
-              <option key={s.id} value={s.id}>
-                {s.stockTicker} ({s.companyName}) — Avail: {s.totalSharesAvailable}
-              </option>
-            ))}
-          </select>
+          <Select
+            options={stockOptions}
+            value={stockOptions.find(o => o.value === selectedStock) || null}
+            onChange={opt => setSelectedStock(opt ? opt.value : '')}
+            placeholder="Select a stock..."
+            isSearchable
+            styles={{
+              container: provided => ({ ...provided, flex: 1, minWidth: 200 }),
+              control: provided => ({ ...provided, borderRadius: 'var(--border-radius)' })
+            }}
+          />
 
           <input
             type="number"
