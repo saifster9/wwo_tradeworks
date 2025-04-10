@@ -6,14 +6,22 @@ import '../styles/new_styles.css';
 function Portfolio() {
     const [portfolio, setPortfolio] = useState([]);
     const [cashBalance, setCashBalance] = useState(0.00);
-    const { userId } = localStorage.getItem('userId');;
+    const userId = localStorage.getItem('userId');
+
 
     useEffect(() => {
     const fetchPortfolioData = async () => {
         try {
             // Fetch cash balance
             const cashBalanceResponse = await axios.get(`http://localhost:5000/api/user-balances/${userId}`);
-            setCashBalance(cashBalanceResponse.data.cashBalance);
+            // Convert the fetched balance to a number
+            const fetchedBalance = parseFloat(cashBalanceResponse.data.cash_balance);
+            // Check if the fetched balance is a valid number
+            if (!isNaN(fetchedBalance)) {
+                setCashBalance(fetchedBalance);
+            } else {
+                console.error('Invalid cash balance:', cashBalanceResponse.data.cash_balance);
+            }
 
         } catch (error) {
             console.error('Error fetching user data:', error);

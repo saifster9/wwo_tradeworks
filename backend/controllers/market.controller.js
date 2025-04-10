@@ -5,36 +5,43 @@ const { Op } = require('sequelize');
 exports.isMarketOpen = async (req, res) => {
     try {
         const now = new Date();
+        // Calculate EST time (note: this method uses a fixed offset of -5 hours; consider handling daylight savings if needed)
         const estOffset = -5 * 60; // EST offset in minutes
         const estDate = new Date(now.getTime() + estOffset * 60 * 1000);
         const dayOfWeek = estDate.getDay();
-        const hour = estDate.getHours();
-        const minute = estDate.getMinutes();
+        const currentHour = estDate.getHours();
+        const currentMinute = estDate.getMinutes();
 
+        // Retrieve the schedule for the current day of the week
         const schedule = await MarketSchedule.findOne({ where: { day_of_week: dayOfWeek } });
 
         if (schedule && schedule.isTradingDay) {
-            const openTime = schedule.open_time;
-            const closeTime = schedule.close_time;
+            const openTimeStr = schedule.open_time;  // e.g., "09:30:00"
+            const closeTimeStr = schedule.close_time; // e.g., "16:00:00"
 
-            if (openTime && closeTime) {
-                const openHour = openTime.getHours();
-                const openMinute = openTime.getMinutes();
-                const closeHour = closeTime.getHours();
-                const closeMinute = closeTime.getMinutes();
+            if (openTimeStr && closeTimeStr) {
+                // Parse the open time string into hours and minutes
+                const [openHour, openMinute] = openTimeStr.split(':').map(Number);
+                // Parse the close time string into hours and minutes
+                const [closeHour, closeMinute] = closeTimeStr.split(':').map(Number);
 
-                if (hour > openHour || (hour === openHour && minute >= openMinute)) {
-                    if (hour < closeHour || (hour === closeHour && minute <= closeMinute)) {
-                        const isHoliday = await Holiday.findOne({
-                            where: {
-                                holiday_date: {
-                                    [Op.eq]: estDate.toISOString().split('T')[0]
-                                }
+                // Check if the current EST time is after the opening time
+                const afterOpen = (currentHour > openHour) || (currentHour === openHour && currentMinute >= openMinute);
+                // Check if the current EST time is before the closing time
+                const beforeClose = (currentHour < closeHour) || (currentHour === closeHour && currentMinute <= closeMinute);
+
+                if (afterOpen && beforeClose) {
+                    // Check if today is a holiday: using the ISO date string (YYYY-MM-DD)
+                    const estDateStr = estDate.toISOString().split('T')[0];
+                    const isHoliday = await Holiday.findOne({
+                        where: {
+                            holiday_date: {
+                                [Op.eq]: estDateStr
                             }
-                        });
-                        if (!isHoliday) {
-                            return res.json({ open: true });
                         }
+                    });
+                    if (!isHoliday) {
+                        return res.json({ open: true });
                     }
                 }
             }
