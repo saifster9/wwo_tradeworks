@@ -4,43 +4,55 @@ const sequelize = require('../config/db.config');
 
 exports.createTransaction = async (req, res) => {
   const { userId, amount } = req.body;
+  const numAmount = parseFloat(amount);   // Coerce amount to a number
+  const transactionType = numAmount >= 0 ? 'deposit' : 'withdrawal';
 
-  // Coerce amount to a number
-  const numAmount = parseFloat(amount);
+  // Validate input
   if (!userId || isNaN(numAmount)) {
     return res.status(400).json({ message: 'userId and numeric amount required' });
   }
 
-  const transactionType = numAmount >= 0 ? 'deposit' : 'withdrawal';
-
   // Wrap in a DB transaction to keep balance and history in sync
   const t = await sequelize.transaction();
   try {
-    // 1. Create the cash transaction record
+    // 1. Fetch current balance inside transaction
+    const userBalance = await UserBalance.findOne({ where: { userId }, transaction: t });
+    if (!userBalance) {
+      await t.rollback();
+      return res.status(404).json({ message: 'User balance not found' });
+    }
+
+    const current = parseFloat(userBalance.cash_balance);
+
+    // 2. If withdrawal, ensure sufficient funds
+    if (transactionType === 'withdrawal' && Math.abs(numAmount) > current) {
+      await t.rollback();
+      return res.status(400).json({ message: 'Insufficient funds for withdrawal' });
+    }
+
+    // 3. Create the cash transaction record
     const tx = await CashTransaction.create(
       { userId, amount: numAmount, transactionType },
       { transaction: t }
     );
 
-    // 2. Update the user's balance manually
-    const userBalance = await UserBalance.findOne({ where: { userId }, transaction: t });
-    const current = parseFloat(userBalance.cash_balance);
-    const newBalance =
-      transactionType === 'deposit'
-        ? current + numAmount
-        : current - Math.abs(numAmount);
+    // 4. Compute new balance
+    const newBalance = transactionType === 'deposit'
+      ? current + numAmount
+      : current - Math.abs(numAmount);
 
+    // 5. Update the user's balance
     await userBalance.update(
       { cash_balance: newBalance.toFixed(2) },
       { transaction: t }
     );
 
     await t.commit();
-    res.status(201).json({ message: 'Transaction successful', transaction: tx });
+    return res.status(201).json({ message: 'Transaction successful', transaction: tx });
   } catch (err) {
     await t.rollback();
     console.error(err);
-    res.status(500).json({ message: 'Error processing transaction', error: err.message });
+    return res.status(500).json({ message: 'Error processing transaction', error: err.message });
   }
 };
 
