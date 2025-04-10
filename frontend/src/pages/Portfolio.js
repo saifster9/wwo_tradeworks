@@ -5,17 +5,20 @@ import { UserContext } from '../context/UserContext';
 
 function Portfolio() {
   const { user } = useContext(UserContext);
-  const userId = user.userId;
+  const userId    = user.userId;
   const firstName = user.firstName;
 
-  const [cashBalance, setCashBalance] = useState(0);
-  const [amount, setAmount] = useState('');
-  const [warning, setWarning] = useState('');
+  // State
+  const [cashBalance, setCashBalance]       = useState(0);
+  const [amount, setAmount]                 = useState('');
+  const [warning, setWarning]               = useState('');
 
-  const [stocks, setStocks] = useState([]);
-  const [selectedStock, setSelectedStock] = useState('');
-  const [stockQty, setStockQty] = useState('');
-  const [stockWarning, setStockWarning] = useState('');
+  const [stocks, setStocks]                 = useState([]);
+  const [selectedStock, setSelectedStock]   = useState('');
+  const [stockQty, setStockQty]             = useState('');
+  const [stockWarning, setStockWarning]     = useState('');
+
+  const [holdings, setHoldings]             = useState([]);
 
   // Fetch cash balance
   const fetchBalance = useCallback(async () => {
@@ -27,7 +30,7 @@ function Portfolio() {
     }
   }, [userId]);
 
-  // Fetch stock listings
+  // Fetch available stocks
   const fetchStocks = useCallback(async () => {
     try {
       const resp = await axios.get('http://localhost:5000/api/stocks');
@@ -37,12 +40,23 @@ function Portfolio() {
     }
   }, []);
 
+  // Fetch user holdings
+  const fetchHoldings = useCallback(async () => {
+    try {
+      const resp = await axios.get(`http://localhost:5000/api/user-holdings/${userId}`);
+      setHoldings(resp.data);
+    } catch (err) {
+      console.error('Error fetching holdings:', err);
+    }
+  }, [userId]);
+
   // Initial load
   useEffect(() => {
     if (!userId) return;
     fetchBalance();
     fetchStocks();
-  }, [userId, fetchBalance, fetchStocks]);
+    fetchHoldings();
+  }, [userId, fetchBalance, fetchStocks, fetchHoldings]);
 
   // Handle cash deposit/withdraw
   const handleSubmitCash = async e => {
@@ -58,8 +72,11 @@ function Portfolio() {
       setAmount('');
       fetchBalance();
     } catch (err) {
-      if (err.response?.status === 400) setWarning(err.response.data.message);
-      else setWarning('An unexpected error occurred.');
+      setWarning(
+        err.response?.status === 400
+          ? err.response.data.message
+          : 'An unexpected error occurred.'
+      );
     }
   };
 
@@ -77,9 +94,10 @@ function Portfolio() {
         stockId: selectedStock,
         quantity: qty
       });
+      setStockQty('');
       fetchBalance();
       fetchStocks();
-      setStockQty('');
+      fetchHoldings();
     } catch (err) {
       setStockWarning(err.response?.data?.message || 'Buy failed');
     }
@@ -99,9 +117,10 @@ function Portfolio() {
         stockId: selectedStock,
         quantity: qty
       });
+      setStockQty('');
       fetchBalance();
       fetchStocks();
-      setStockQty('');
+      fetchHoldings();
     } catch (err) {
       setStockWarning(err.response?.data?.message || 'Sell failed');
     }
@@ -114,14 +133,15 @@ function Portfolio() {
       {/* Cash Balance & Actions */}
       <div className="admin-section">
         <h3>Cash Balance</h3>
-        <p>${cashBalance.toFixed(2)}</p>
+        <p className="large-text">${cashBalance.toFixed(2)}</p>
+
         <h4>Deposit / Withdraw Cash</h4>
-        {warning && <p className="error-message" style={{ color: 'red' }}>{warning}</p>}
-        <form onSubmit={handleSubmitCash}>
+        {warning && <p className="error-message">{warning}</p>}
+        <form onSubmit={handleSubmitCash} className="flex-form">
           <input
             type="number"
             step="0.01"
-            placeholder="Positive to deposit, negative to withdraw"
+            placeholder="+ deposit, – withdraw"
             value={amount}
             onChange={e => setAmount(e.target.value)}
             required
@@ -133,24 +153,64 @@ function Portfolio() {
       {/* Buy / Sell Stocks */}
       <div className="admin-section">
         <h3>Buy / Sell Stocks</h3>
-        {stockWarning && <p style={{ color: 'red' }}>{stockWarning}</p>}
-        <select value={selectedStock} onChange={e => setSelectedStock(e.target.value)}>
-          <option value="">-- Select Stock --</option>
-          {stocks.map(s => (
-            <option key={s.id} value={s.id}>
-              {s.stockTicker} ({s.companyName}) – Available: {s.totalSharesAvailable}
-            </option>
-          ))}
-        </select>
-        <input
-          type="number"
-          min="1"
-          placeholder="Quantity"
-          value={stockQty}
-          onChange={e => setStockQty(e.target.value)}
-        />
-        <button onClick={handleBuy}>Buy</button>
-        <button onClick={handleSell}>Sell</button>
+        {stockWarning && <p className="error-message">{stockWarning}</p>}
+
+        <div className="flex-form">
+          <select
+            value={selectedStock}
+            onChange={e => setSelectedStock(e.target.value)}
+          >
+            <option value="">-- Select Stock --</option>
+            {stocks.map(s => (
+              <option key={s.id} value={s.id}>
+                {s.stockTicker} ({s.companyName}) — Avail: {s.totalSharesAvailable}
+              </option>
+            ))}
+          </select>
+
+          <input
+            type="number"
+            min="1"
+            placeholder="Quantity"
+            value={stockQty}
+            onChange={e => setStockQty(e.target.value)}
+          />
+
+          <button onClick={handleBuy}>Buy</button>
+          <button onClick={handleSell}>Sell</button>
+        </div>
+      </div>
+
+      {/* User Holdings */}
+      <div className="admin-section">
+        <h3>Your Stock Holdings</h3>
+
+        {holdings.length === 0 ? (
+          // Only displayed if the user has no stocks
+          // This is a placeholder for the case when the user has no stocks
+          <p>You currently own no stocks.</p>
+        ) : (
+          // Display the user's stock holdings in a table format
+          // This is a placeholder for the case when the user has stocks
+          <table className="stock-table">
+            <thead>
+              <tr>
+                <th>Stock</th>
+                <th>Company</th>
+                <th>Shares Owned</th>
+              </tr>
+            </thead>
+            <tbody>
+              {holdings.map(h => (
+                <tr key={h.id}>
+                  <td>{h.stock.stockTicker}</td>
+                  <td>{h.stock.companyName}</td>
+                  <td>{h.shares}</td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        )}
       </div>
     </div>
   );
