@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import '../styles/new_styles.css';
+import { UserContext } from '../context/UserContext'; // Import UserContext
 
 function Login({ isAdmin }) {
     const [username, setUsername] = useState(localStorage.getItem('rememberUser') || '');
@@ -10,44 +11,60 @@ function Login({ isAdmin }) {
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
     const navigate = useNavigate();
+    
+    // Access the global user context
+    const { setUser } = useContext(UserContext); // Use the context to set user data
+    
+    // Handle form submission
     const handleSubmit = async (e) => {
         e.preventDefault();
         setLoading(true);
         setError('');
         try {
-            const response = await axios.post('http://localhost:5000/api/users/login', {
-                username,
-                password,
-                isAdmin: isAdmin  // Send isAdmin value to backend
-            });
-            alert('Login successful!');
-            if (rememberMe) {
-                localStorage.setItem('rememberUser', username);
-            } else {
-                localStorage.removeItem('rememberUser');
-            }
-
-            // Store the user' first name in localStorage
-            localStorage.setItem('firstName', response.data.firstName);
-
-            // Store the user ID in localStorage
-            localStorage.setItem('userId', response.data.userId);
-            
-            navigate(isAdmin ? '/admin-dashboard' : '/user-dashboard');
+          const response = await axios.post('http://localhost:5000/api/users/login', {
+            username,
+            password,
+            isAdmin: isAdmin
+          });
+          
+          alert('Login successful!');
+    
+          if (rememberMe) {
+            localStorage.setItem('rememberUser', username);
+          } else {
+            localStorage.removeItem('rememberUser');
+          }
+    
+          // Update global state with user data including userId and firstName.
+          setUser({
+            userId: response.data.userId,
+            firstName: response.data.firstName,
+            isAdmin: response.data.isAdmin
+          });
+    
+          // Also store in localStorage for persistence (in case of page reloads)
+          localStorage.setItem('userData', JSON.stringify({
+            userId: response.data.userId,
+            firstName: response.data.firstName,
+            isAdmin: response.data.isAdmin
+          }));
+    
+          navigate(isAdmin ? '/admin-dashboard' : '/user-dashboard');
         } catch (err) {
-            if (err.response && err.response.status === 401) {
-                setError('Incorrect password. Please try again.');
-            } else if (err.response && err.response.status === 404) {
-                setError('User not found. Please check your username.');
-            } else if (err.response && err.response.status === 403) {
-                setError('Unauthorized access. Admin login is for administrators only.'); // Handle 403 error
-            } else {
-                setError('An error occurred. Please try again later.');
-            }
+          if (err.response && err.response.status === 401) {
+            setError('Incorrect password. Please try again.');
+          } else if (err.response && err.response.status === 404) {
+            setError('User not found. Please check your username.');
+          } else if (err.response && err.response.status === 403) {
+            setError('Unauthorized access. Admin login is for administrators only.');
+          } else {
+            setError('An error occurred. Please try again later.');
+          }
         } finally {
-            setLoading(false);
+          setLoading(false);
         }
-    };
+      };
+
     return (
         <div className="login-container">
             <h2>{isAdmin ? 'Admin Login' : 'User Login'}</h2>
@@ -67,4 +84,5 @@ function Login({ isAdmin }) {
         </div>
     );
 }
+
 export default Login;

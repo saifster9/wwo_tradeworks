@@ -1,41 +1,43 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { useParams } from 'react-router-dom';
 import '../styles/new_styles.css';
+import { UserContext } from '../context/UserContext';
 
 function Portfolio() {
     const [portfolio, setPortfolio] = useState([]);
     const [cashBalance, setCashBalance] = useState(0.00);
-    const userId = localStorage.getItem('userId');
 
-
+    // Access global user data
+    const { user } = useContext(UserContext);
+    const firstName = user.firstName;
+    const userId = user.userId;
+    
+    
     useEffect(() => {
-    const fetchPortfolioData = async () => {
-        try {
-            // Fetch cash balance
-            const cashBalanceResponse = await axios.get(`http://localhost:5000/api/user-balances/${userId}`);
-            // Convert the fetched balance to a number
-            const fetchedBalance = parseFloat(cashBalanceResponse.data.cash_balance);
-            // Check if the fetched balance is a valid number
-            if (!isNaN(fetchedBalance)) {
-                setCashBalance(fetchedBalance);
-            } else {
-                console.error('Invalid cash balance:', cashBalanceResponse.data.cash_balance);
+        const fetchPortfolioData = async () => {
+          try {
+            if (!userId) {
+              console.error('User ID is not available in the global state.');
+              return;
             }
-
-        } catch (error) {
+            const cashBalanceResponse = await axios.get(`http://localhost:5000/api/user-balances/${userId}`);
+            // Ensure conversion to number if necessary
+            const fetchedBalance = parseFloat(cashBalanceResponse.data.cash_balance);
+            setCashBalance(fetchedBalance);
+          } catch (error) {
             console.error('Error fetching user data:', error);
             alert('Error fetching user data.');
-        }
-    };
-
-    fetchPortfolioData();
-}, [userId]);
+          }
+        };
+    
+        fetchPortfolioData();
+      }, [userId]);
 
 return (
     <div>
         <div className="dashboard-container">
-            <h2>Your Portfolio</h2>
+            <h2>{firstName}'s Portfolio</h2>
 
             {/* Cash Balance Section */}
             <div className="admin-section">
@@ -51,7 +53,6 @@ return (
         </div>
     </div>
 );
-
 }
 
 export default Portfolio;
