@@ -7,13 +7,13 @@ function Portfolio() {
   const [cashBalance, setCashBalance] = useState(0);
   const [amount, setAmount] = useState('');
   const [txHistory, setTxHistory] = useState([]);
-  const [warning, setWarning] = useState('');            // 1) warning state
+  const [warning, setWarning] = useState('');
 
   const { user } = useContext(UserContext);
   const userId = user.userId;
   const firstName = user.firstName;
 
-  // Only define fetch functions if userId exists
+  // Fetch balance
   const fetchBalance = useCallback(async () => {
     try {
       const resp = await axios.get(`http://localhost:5000/api/user-balances/${userId}`);
@@ -23,6 +23,7 @@ function Portfolio() {
     }
   }, [userId]);
 
+  // Fetch history
   const fetchHistory = useCallback(async () => {
     try {
       const resp = await axios.get(`http://localhost:5000/api/cash-transactions/${userId}`);
@@ -32,15 +33,16 @@ function Portfolio() {
     }
   }, [userId]);
 
+  // On mount / userId change
   useEffect(() => {
-    if (!userId) return;   // <<--- Guard here
+    if (!userId) return;
     fetchBalance();
     fetchHistory();
   }, [userId, fetchBalance, fetchHistory]);
 
   const handleSubmit = async e => {
     e.preventDefault();
-    setWarning('');  // clear previous warning
+    setWarning('');
     const num = parseFloat(amount);
     if (isNaN(num) || num === 0) {
       setWarning('Please enter a non‑zero numeric amount.');
@@ -54,12 +56,8 @@ function Portfolio() {
       fetchHistory();
     } catch (err) {
       console.error(err);
-      // 2) inspect error
       if (err.response && err.response.status === 400) {
-        // use the backend message if provided
-        const msg = err.response.data.message || 
-                    'Warning: The withdrawal amount cannot exceed available cash balance.';
-        setWarning(msg);
+        setWarning(err.response.data.message);
       } else {
         setWarning('An unexpected error occurred. Please try again.');
       }
@@ -70,10 +68,12 @@ function Portfolio() {
     <div className="dashboard-container">
       <h2>{firstName}'s Portfolio</h2>
 
-      {/* Deposit/Withdraw Section */}
+      {/* Cash Balance and Actions */}
       <div className="admin-section">
-        <h3>Deposit / Withdraw Cash</h3>
-        {warning && (                                      // 3) render warning
+        <h3>Cash Balance</h3>
+        <p>${cashBalance.toFixed(2)}</p>
+        <h4>Deposit / Withdraw Cash</h4>
+        {warning && (
           <p className="error-message" style={{ color: 'red' }}>
             {warning}
           </p>
@@ -91,10 +91,9 @@ function Portfolio() {
         </form>
       </div>
 
-      {/* Cash Balance Section */}
+      {/* Stock Section */}
       <div className="admin-section">
-        <h3>Cash Balance</h3>
-        <p>${cashBalance.toFixed(2)}</p>
+        
       </div>
 
       {/* Transaction History */}
