@@ -8,17 +8,21 @@ function Portfolio() {
   const userId    = user.userId;
   const firstName = user.firstName;
 
-  // State
-  const [cashBalance, setCashBalance]       = useState(0);
-  const [amount, setAmount]                 = useState('');
-  const [warning, setWarning]               = useState('');
+  // Cash states
+  const [cashBalance, setCashBalance] = useState(0);
+  const [cashAmount, setCashAmount]   = useState('');
+  const [cashType, setCashType]       = useState('deposit'); // 'deposit' or 'withdraw'
+  const [cashWarning, setCashWarning] = useState('');
 
-  const [stocks, setStocks]                 = useState([]);
-  const [selectedStock, setSelectedStock]   = useState('');
-  const [stockQty, setStockQty]             = useState('');
-  const [stockWarning, setStockWarning]     = useState('');
+  // Stock states
+  const [stocks, setStocks]           = useState([]);
+  const [selectedStock, setSelectedStock] = useState('');
+  const [stockQty, setStockQty]       = useState('');
+  const [tradeType, setTradeType]     = useState('buy');     // 'buy' or 'sell'
+  const [stockWarning, setStockWarning] = useState('');
 
-  const [holdings, setHoldings]             = useState([]);
+  // Holdings
+  const [holdings, setHoldings]       = useState([]);
 
   // Fetch cash balance
   const fetchBalance = useCallback(async () => {
@@ -30,7 +34,7 @@ function Portfolio() {
     }
   }, [userId]);
 
-  // Fetch available stocks
+  // Fetch stocks and holdings
   const fetchStocks = useCallback(async () => {
     try {
       const resp = await axios.get('http://localhost:5000/api/stocks');
@@ -40,7 +44,6 @@ function Portfolio() {
     }
   }, []);
 
-  // Fetch user holdings
   const fetchHoldings = useCallback(async () => {
     try {
       const resp = await axios.get(`http://localhost:5000/api/user-holdings/${userId}`);
@@ -58,88 +61,61 @@ function Portfolio() {
     fetchHoldings();
   }, [userId, fetchBalance, fetchStocks, fetchHoldings]);
 
-  // Handle cash deposit/withdraw
-  const handleSubmitCash = async e => {
+  // Handle unified cash submit
+  const handleCashSubmit = async e => {
     e.preventDefault();
-    setWarning('');
-    const num = parseFloat(amount);
-    if (isNaN(num) || num === 0) {
-      setWarning('Please enter a non‑zero numeric amount.');
+    setCashWarning('');
+    const num = parseFloat(cashAmount);
+    if (isNaN(num) || num <= 0) {
+      setCashWarning('Enter a positive amount.');
       return;
     }
+
     try {
-      await axios.post('http://localhost:5000/api/cash-transactions', { userId, amount: num });
-      setAmount('');
+      const amt = cashType === 'withdraw' ? -num : num;
+      await axios.post('http://localhost:5000/api/cash-transactions', { userId, amount: amt });
+      setCashAmount('');
       fetchBalance();
     } catch (err) {
-      setWarning(
-        err.response?.status === 400
-          ? err.response.data.message
-          : 'An unexpected error occurred.'
-      );
+      setCashWarning(err.response?.data?.message || 'Cash transaction failed');
     }
   };
 
-  // Handle stock buy
-  const handleBuy = async () => {
+  // Handle unified stock submit
+  const handleStockSubmit = async e => {
+    e.preventDefault();
     setStockWarning('');
+
     const qty = parseInt(stockQty, 10);
     if (!selectedStock || isNaN(qty) || qty <= 0) {
       setStockWarning('Select a stock and enter a positive quantity.');
       return;
     }
-  
-    // 1) Find the selected stock object
+
     const stock = stocks.find(s => s.id.toString() === selectedStock);
     if (!stock) {
       setStockWarning('Selected stock not found.');
       return;
     }
-  
-    // 2) Compute total cost
+
     const pricePerShare = parseFloat(stock.initialSharePrice);
-    const totalCost = pricePerShare * qty;
-  
-    // 3) Check cash balance
-    if (totalCost > cashBalance) {
-      setStockWarning(`Insufficient cash. You need $${totalCost.toFixed(2)}, but have only $${cashBalance.toFixed(2)}.`);
+    const totalValue = pricePerShare * qty;
+
+    if (tradeType === 'buy' && totalValue > cashBalance) {
+      setStockWarning(`Insufficient cash. Need $${totalValue.toFixed(2)}, have $${cashBalance.toFixed(2)}.`);
       return;
     }
-  
-    // 4) Check availability
-    if (qty > stock.totalSharesAvailable) {
+    if (tradeType === 'buy' && qty > stock.totalSharesAvailable) {
       setStockWarning(`Only ${stock.totalSharesAvailable} shares available.`);
       return;
     }
-  
-    // 5) Proceed with buy request
-    try {
-      await axios.post('http://localhost:5000/api/stock-transactions/buy', {
-        userId,
-        stockId: selectedStock,
-        quantity: qty
-      });
-      // Clear input
-      setStockQty('');
-      // Refresh data
-      fetchBalance();
-      fetchStocks();
-      fetchHoldings();
-    } catch (err) {
-      setStockWarning(err.response?.data?.message || 'Buy failed');
-    }
-  };  
 
-  // Handle stock sell
-  const handleSell = async () => {
-    setStockWarning('');
-    const qty = parseInt(stockQty, 10);
-    if (!selectedStock || isNaN(qty) || qty <= 0) {
-      setStockWarning('Select a stock and enter a positive quantity.');
-      return;
-    }
+    const endpoint = tradeType === 'buy'
+      ? 'buy'
+      : 'sell';
+
     try {
-      await axios.post('http://localhost:5000/api/stock-transactions/sell', {
+      await axios.post(`http://localhost:5000/api/stock-transactions/${endpoint}`, {
         userId,
         stockId: selectedStock,
         quantity: qty
@@ -149,7 +125,7 @@ function Portfolio() {
       fetchStocks();
       fetchHoldings();
     } catch (err) {
-      setStockWarning(err.response?.data?.message || 'Sell failed');
+      setStockWarning(err.response?.data?.message || 'Stock transaction failed');
     }
   };
 
@@ -157,36 +133,59 @@ function Portfolio() {
     <div className="dashboard-container">
       <h2>{firstName}'s Portfolio</h2>
 
-      {/* Cash Balance & Actions */}
+      {/* Unified Cash Transaction */}
       <div className="admin-section">
-        <h3>Cash Balance</h3>
-        <p className="large-text">${cashBalance.toFixed(2)}</p>
+        <h3>Cash Transaction</h3>
+        <p>Balance: <strong>${cashBalance.toFixed(2)}</strong></p>
+        {cashWarning && <p className="error-message">{cashWarning}</p>}
 
-        <h4>Deposit / Withdraw Cash</h4>
-        {warning && <p className="error-message">{warning}</p>}
-        <form onSubmit={handleSubmitCash} className="flex-form">
+        <form onSubmit={handleCashSubmit} className="flex-form">
           <input
             type="number"
             step="0.01"
-            placeholder="+ deposit, – withdraw"
-            value={amount}
-            onChange={e => setAmount(e.target.value)}
+            placeholder="Amount"
+            value={cashAmount}
+            onChange={e => setCashAmount(e.target.value)}
             required
           />
-          <button type="submit">Submit</button>
+
+          <label>
+            <input
+              type="radio"
+              name="cashType"
+              value="deposit"
+              checked={cashType === 'deposit'}
+              onChange={() => setCashType('deposit')}
+            />
+            Deposit
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="cashType"
+              value="withdraw"
+              checked={cashType === 'withdraw'}
+              onChange={() => setCashType('withdraw')}
+            />
+            Withdraw
+          </label>
+
+          <button type="submit">
+            {cashType === 'deposit' ? 'Deposit' : 'Withdraw'}
+          </button>
         </form>
       </div>
 
-      {/* Buy / Sell Stocks */}
+      {/* Unified Stock Transaction */}
       <div className="admin-section">
-        <h3>Buy / Sell Stocks</h3>
-
+        <h3>Stock Transaction</h3>
         {stockWarning && <p className="error-message">{stockWarning}</p>}
 
-        <div className="flex-form">
+        <form onSubmit={handleStockSubmit} className="flex-form">
           <select
             value={selectedStock}
             onChange={e => setSelectedStock(e.target.value)}
+            required
           >
             <option value="">-- Select Stock --</option>
             {stocks.map(s => (
@@ -202,30 +201,48 @@ function Portfolio() {
             placeholder="Quantity"
             value={stockQty}
             onChange={e => setStockQty(e.target.value)}
+            required
           />
 
-          <button onClick={handleBuy}>Buy</button>
-          <button onClick={handleSell}>Sell</button>
-        </div>
+          <label>
+            <input
+              type="radio"
+              name="tradeType"
+              value="buy"
+              checked={tradeType === 'buy'}
+              onChange={() => setTradeType('buy')}
+            />
+            Buy
+          </label>
+          <label>
+            <input
+              type="radio"
+              name="tradeType"
+              value="sell"
+              checked={tradeType === 'sell'}
+              onChange={() => setTradeType('sell')}
+            />
+            Sell
+          </label>
+
+          <button type="submit">
+            {tradeType === 'buy' ? 'Buy' : 'Sell'}
+          </button>
+        </form>
       </div>
 
       {/* User Holdings */}
       <div className="admin-section">
         <h3>Your Stock Holdings</h3>
-
         {holdings.length === 0 ? (
-          // Only displayed if the user has no stocks
-          // This is a placeholder for the case when the user has no stocks
           <p>You currently own no stocks.</p>
         ) : (
-          // Display the user's stock holdings in a table format
-          // This is a placeholder for the case when the user has stocks
           <table className="stock-table">
             <thead>
               <tr>
-                <th>Stock</th>
+                <th>Ticker</th>
                 <th>Company</th>
-                <th>Shares Owned</th>
+                <th>Shares</th>
               </tr>
             </thead>
             <tbody>
