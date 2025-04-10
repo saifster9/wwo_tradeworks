@@ -8,6 +8,7 @@ const userBalanceRoutes = require('./routes/userBalance.routes');
 const MarketSchedule = require('./models/market_schedule.model');
 const defaultMarketSchedule = require('./data/defaultMarketSchedule');
 const cashTxRoutes = require('./routes/cashTransaction.routes');
+const stockTxRoutes = require('./routes/stockTransaction.routes');
 
 const app = express();
 
@@ -20,6 +21,7 @@ app.use('/api/stocks', stockRoutes);
 app.use('/api/market', marketRoutes);
 app.use('/api/user-balances', userBalanceRoutes);
 app.use('/api/cash-transactions', cashTxRoutes);
+app.use('/api/stock-transactions', stockTxRoutes);
 
 // Sync the database and then seed the market_schedule table if necessary
 sequelize.sync()
