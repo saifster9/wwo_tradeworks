@@ -22,7 +22,7 @@ function Navbar() {
                 <>
                     <Link to="/user-dashboard">Dashboard</Link>
                     <Link to="/portfolio">Portfolio</Link>
-                    <Link to="/transaction-history">Transaction History</Link>
+                    <Link to="/transaction-history">History</Link>
                     <Link to="/login" onClick={handleLogout} className="logout-button">
                         Logout
                     </Link>
