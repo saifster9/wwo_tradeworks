@@ -6,14 +6,12 @@ import { UserContext } from '../context/UserContext';
 function Portfolio() {
   const [cashBalance, setCashBalance] = useState(0);
   const [amount, setAmount] = useState('');
-  const [txHistory, setTxHistory] = useState([]);
   const [warning, setWarning] = useState('');
 
   const { user } = useContext(UserContext);
   const userId = user.userId;
   const firstName = user.firstName;
 
-  // Fetch balance
   const fetchBalance = useCallback(async () => {
     try {
       const resp = await axios.get(`http://localhost:5000/api/user-balances/${userId}`);
@@ -23,22 +21,10 @@ function Portfolio() {
     }
   }, [userId]);
 
-  // Fetch history
-  const fetchHistory = useCallback(async () => {
-    try {
-      const resp = await axios.get(`http://localhost:5000/api/cash-transactions/${userId}`);
-      setTxHistory(resp.data);
-    } catch (err) {
-      console.error('Error fetching history:', err);
-    }
-  }, [userId]);
-
-  // On mount / userId change
   useEffect(() => {
     if (!userId) return;
     fetchBalance();
-    fetchHistory();
-  }, [userId, fetchBalance, fetchHistory]);
+  }, [userId, fetchBalance]);
 
   const handleSubmit = async e => {
     e.preventDefault();
@@ -53,7 +39,6 @@ function Portfolio() {
       await axios.post('http://localhost:5000/api/cash-transactions', { userId, amount: num });
       setAmount('');
       fetchBalance();
-      fetchHistory();
     } catch (err) {
       console.error(err);
       if (err.response && err.response.status === 400) {
@@ -93,34 +78,7 @@ function Portfolio() {
 
       {/* Stock Section */}
       <div className="admin-section">
-        
-      </div>
-
-      {/* Transaction History */}
-      <div className="admin-section">
-        <h3>Cash Transaction History</h3>
-        {txHistory.length === 0 ? (
-          <p>No transactions yet.</p>
-        ) : (
-          <table>
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {txHistory.map(tx => (
-                <tr key={tx.id}>
-                  <td>{new Date(tx.createdAt).toLocaleString()}</td>
-                  <td>{tx.transactionType}</td>
-                  <td>${parseFloat(tx.amount).toFixed(2)}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+        {/* Your stock holdings will go here */}
       </div>
     </div>
   );
