@@ -88,20 +88,47 @@ function Portfolio() {
       setStockWarning('Select a stock and enter a positive quantity.');
       return;
     }
+  
+    // 1) Find the selected stock object
+    const stock = stocks.find(s => s.id.toString() === selectedStock);
+    if (!stock) {
+      setStockWarning('Selected stock not found.');
+      return;
+    }
+  
+    // 2) Compute total cost
+    const pricePerShare = parseFloat(stock.initialSharePrice);
+    const totalCost = pricePerShare * qty;
+  
+    // 3) Check cash balance
+    if (totalCost > cashBalance) {
+      setStockWarning(`Insufficient cash. You need $${totalCost.toFixed(2)}, but have only $${cashBalance.toFixed(2)}.`);
+      return;
+    }
+  
+    // 4) Check availability
+    if (qty > stock.totalSharesAvailable) {
+      setStockWarning(`Only ${stock.totalSharesAvailable} shares available.`);
+      return;
+    }
+  
+    // 5) Proceed with buy request
     try {
       await axios.post('http://localhost:5000/api/stock-transactions/buy', {
         userId,
         stockId: selectedStock,
         quantity: qty
       });
+      // Clear input
       setStockQty('');
+      // Refresh data
       fetchBalance();
       fetchStocks();
       fetchHoldings();
     } catch (err) {
       setStockWarning(err.response?.data?.message || 'Buy failed');
     }
-  };
+  };  
 
   // Handle stock sell
   const handleSell = async () => {
@@ -153,6 +180,7 @@ function Portfolio() {
       {/* Buy / Sell Stocks */}
       <div className="admin-section">
         <h3>Buy / Sell Stocks</h3>
+
         {stockWarning && <p className="error-message">{stockWarning}</p>}
 
         <div className="flex-form">
