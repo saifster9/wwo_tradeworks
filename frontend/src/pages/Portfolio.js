@@ -3,6 +3,8 @@ import axios from 'axios';
 import '../styles/new_styles.css';
 import { UserContext } from '../context/UserContext';
 import Select from 'react-select';
+import ConfirmModal from '../components/ConfirmModal';
+
 
 function Portfolio() {
   const { user } = useContext(UserContext);
@@ -17,13 +19,16 @@ function Portfolio() {
 
   // Stock states
   const [stocks, setStocks]           = useState([]);
-  const [selectedStock, setSelectedStock] = useState('');
+  const [selectedStock, setSelectedStock] = useState(null);
   const [stockQty, setStockQty]       = useState('');
   const [tradeType, setTradeType]     = useState('buy');     // 'buy' or 'sell'
   const [stockWarning, setStockWarning] = useState('');
 
   // Holdings
   const [holdings, setHoldings]       = useState([]);
+
+  const [pendingTrade, setPendingTrade] = useState(null);
+  // { type: 'buy'|'sell', stock, qty, pricePerShare, totalCost }
 
   // Fetch cash balance
   const fetchBalance = useCallback(async () => {
@@ -82,53 +87,72 @@ function Portfolio() {
     }
   };
 
-  // Handle unified stock submit
-  const handleStockSubmit = async e => {
+  const handleStockSubmit = e => {
     e.preventDefault();
     setStockWarning('');
-
+  
+    // 1. Parse and validate quantity
     const qty = parseInt(stockQty, 10);
     if (!selectedStock || isNaN(qty) || qty <= 0) {
       setStockWarning('Select a stock and enter a positive quantity.');
       return;
     }
-
-    const stock = stocks.find(s => s.id.toString() === selectedStock);
-    if (!stock) {
+  
+    // 2. Find the selected stock object
+    const stockObj = stocks.find(s => s.id === selectedStock);
+    if (!stockObj) {
       setStockWarning('Selected stock not found.');
       return;
     }
-
-    const pricePerShare = parseFloat(stock.initialSharePrice);
-    const totalValue = pricePerShare * qty;
-
-    if (tradeType === 'buy' && totalValue > cashBalance) {
-      setStockWarning(`Insufficient cash. Need $${totalValue.toFixed(2)}, have $${cashBalance.toFixed(2)}.`);
-      return;
+  
+    // 3. Compute pricePerShare and totalCost
+    const pricePerShare = parseFloat(stockObj.initialSharePrice);
+    const totalCost     = pricePerShare * qty;
+  
+    // 4. Affordability and availability checks
+    if (tradeType === 'buy') {
+      if (totalCost > cashBalance) {
+        setStockWarning(`Insufficient cash. Need $${totalCost.toFixed(2)}, have $${cashBalance.toFixed(2)}.`);
+        return;
+      }
+      if (qty > stockObj.totalSharesAvailable) {
+        setStockWarning(`Only ${stockObj.totalSharesAvailable} shares available.`);
+        return;
+      }
+    } else {
+      // you can add sell-specific checks here, e.g. holdings
     }
-    if (tradeType === 'buy' && qty > stock.totalSharesAvailable) {
-      setStockWarning(`Only ${stock.totalSharesAvailable} shares available.`);
-      return;
-    }
+  
+    // 5. Prepare the pendingTrade object
+    setPendingTrade({
+      type: tradeType,
+      ticker: stockObj.stockTicker,
+      company: stockObj.companyName,
+      qty,
+      pricePerShare,
+      totalCost
+    });
+  };
 
-    const endpoint = tradeType === 'buy'
-      ? 'buy'
-      : 'sell';
-
+  const confirmTrade = async () => {
+    const { type, qty } = pendingTrade;
     try {
-      await axios.post(`http://localhost:5000/api/stock-transactions/${endpoint}`, {
-        userId,
-        stockId: selectedStock,
-        quantity: qty
-      });
-      setStockQty('');
+      await axios.post(
+        `http://localhost:5000/api/stock-transactions/${type}`,
+        { userId, stockId: selectedStock, quantity: qty }
+      );
       fetchBalance();
       fetchStocks();
       fetchHoldings();
     } catch (err) {
-      setStockWarning(err.response?.data?.message || 'Stock transaction failed');
+      setStockWarning(err.response?.data?.message || 'Transaction failed');
+    } finally {
+      setPendingTrade(null);
+      setStockQty('');
     }
   };
+
+  const cancelTrade = () => setPendingTrade(null);
 
   const stockOptions = stocks.map(s => ({
     value: s.id,
@@ -182,7 +206,7 @@ function Portfolio() {
         </form>
       </div>
 
-      {/* Unified Stock Transaction */}
+      {/* Stock Transaction */}
       <div className="admin-section">
         <h3>Stock Transaction</h3>
         {stockWarning && <p className="error-message">{stockWarning}</p>}
@@ -191,12 +215,12 @@ function Portfolio() {
           <Select
             options={stockOptions}
             value={stockOptions.find(o => o.value === selectedStock) || null}
-            onChange={opt => setSelectedStock(opt ? opt.value : '')}
+            onChange={opt => setSelectedStock(opt ? opt.value : '')}  // opt.value is a number
             placeholder="Select a stock..."
             isSearchable
             styles={{
-              container: provided => ({ ...provided, flex: 1, minWidth: 200 }),
-              control: provided => ({ ...provided, borderRadius: 'var(--border-radius)' })
+              container: prov => ({ ...prov, flex: 1, minWidth: 200 }),
+              control: prov => ({ ...prov, borderRadius: 'var(--border-radius)' })
             }}
           />
 
@@ -262,6 +286,14 @@ function Portfolio() {
           </table>
         )}
       </div>
+      
+      {/* Confirmation Modal */}
+    <ConfirmModal
+      isOpen={!!pendingTrade}
+      onCancel={cancelTrade}
+      onConfirm={confirmTrade}
+      details={pendingTrade || {}}
+    />
     </div>
   );
 }
