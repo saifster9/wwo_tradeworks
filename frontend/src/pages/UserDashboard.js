@@ -63,7 +63,6 @@ function UserDashboard() {
         <button
           className="admin-dashboard-button"
           onClick={() => navigate('/portfolio')}
-          disabled={marketOpen === false}
         >
           Manage Portfolio
         </button>
