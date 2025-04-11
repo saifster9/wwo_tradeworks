@@ -1,28 +1,29 @@
 import React, { createContext, useState, useEffect } from 'react';
 
-// Create the context
-export const UserContext = createContext();
+export const UserContext = createContext({
+  user: { userId: null, firstName: '', role: '' },
+  setUser: () => {}
+});
 
-// Create the provider component
-export const UserProvider = ({ children }) => {
-  const [user, setUser] = useState(() => {
-    // Optionally initialize from localStorage if you want persistence on refresh
-    const storedUser = localStorage.getItem('userData');
-    return storedUser ? JSON.parse(storedUser) : { userId: null, firstName: '' };
+export function UserProvider({ children }) {
+  const [user, setUser] = useState({
+    userId: null,
+    firstName: '',
+    role: ''
   });
 
-  // Optional: Sync changes to localStorage
   useEffect(() => {
-    if (user && user.userId) {
-      localStorage.setItem('userData', JSON.stringify(user));
-    } else {
-      localStorage.removeItem('userData');
+    const userId    = localStorage.getItem('userId');
+    const firstName = localStorage.getItem('firstName');
+    const role      = localStorage.getItem('role');
+    if (userId) {
+      setUser({ userId, firstName, role });
     }
-  }, [user]);
+  }, []);
 
   return (
     <UserContext.Provider value={{ user, setUser }}>
       {children}
     </UserContext.Provider>
   );
-};
+}

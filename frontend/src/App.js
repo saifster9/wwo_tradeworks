@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
+import React from 'react';
 import Navbar from './components/Navbar.js';
 import Home from './pages/Home.js';
 import Login from './pages/Login.js';
@@ -9,7 +10,8 @@ import ManageStocks from './pages/ManageStocks.js';
 import ManageMarket from './pages/ManageMarket.js';
 import Portfolio from './pages/Portfolio.js';
 import TransactionHistory from './pages/TransactionHistory.js';
-import React from 'react';
+import ProtectedRoute from './components/ProtectedRoute';
+import Unauthorized   from './pages/Unauthorized';
 
 function App() {
     return (
@@ -18,11 +20,31 @@ function App() {
             <div id="root">
                 <Routes>
                     <Route path="/" element={<Home />} />
-                    <Route path="/login" element={<Login isAdmin={false} />} />
-                    <Route path="/admin" element={<Login isAdmin={true} />} />
+                    <Route path="/login" element={<Login />} />
                     <Route path="/register" element={<Register />} />
-                    <Route path="/user-dashboard" element={<UserDashboard />} />
-                    <Route path="/admin-dashboard" element={<AdminDashboard />} />
+
+                    {/* Admin only */}
+                    <Route 
+                        path="/admin-dashboard" 
+                        element={
+                        <ProtectedRoute requireRole="admin">
+                            <AdminDashboard />
+                        </ProtectedRoute>
+                        }
+                    />
+
+                    {/* Any logged-in user */}
+                    <Route 
+                        path="/user-dashboard" 
+                        element={
+                        <ProtectedRoute requireRole="user">
+                            <UserDashboard />
+                        </ProtectedRoute>
+                        }
+                    />
+                    <Route path="/unauthorized" element={<Unauthorized />} />
+
+                    {/* User routes */}
                     <Route path="/manage-stocks" element={<ManageStocks />} />
                     <Route path="/manage-market" element={<ManageMarket />} />
                     <Route path="/portfolio" element={<Portfolio />} />

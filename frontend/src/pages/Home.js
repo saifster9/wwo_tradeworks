@@ -1,30 +1,33 @@
-import { Link } from 'react-router-dom';
-import '../styles/new_styles.css';
+// src/pages/HomePage.js
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
 
-function Home() {
-    return (
-        <div className="home-container">
-            <h1>Welcome to WWO Tradeworks</h1>
-            <div className="home-buttons">
-                <Link to="/login"><button className="login-button">User Login</button></Link>
-                <p>
-                    Users login here to your account to view stocks and make trades.
-                </p>
-                <br></br>
-                <Link to="/admin"><button className="login-button">Admin Login</button></Link>
-                <p>
-                    Admins login here to manage stocks, users and the market.
-                </p>
-                <br></br>
-                
-                <Link to="/register"><button className="login-button">Register</button></Link>
-                <p>
-                    New to WWO Tradeworks? Create an account to start trading today!
-                </p>
-                <br></br>
-            </div>
-        </div>
-    );
+export default function HomePage() {
+  const navigate = useNavigate();
+
+  return (
+    <div className="home-container">
+      <h1>Welcome to WWO Tradeworks</h1>
+
+      <div className="home-actions">
+        <button
+          className="primary-button"
+          onClick={() => navigate('/login')}
+        >
+          Login
+        </button>
+        <p>Log in to your account to view stocks, manage your cash balance, and make trades.</p>
+      </div>
+
+      <div className="home-actions">
+        <button
+          className="primary-button"
+          onClick={() => navigate('/register')}
+        >
+          Register
+        </button>
+        <p>New to WWO Tradeworks? Create an account to start trading today!</p>
+      </div>
+    </div>
+  );
 }
-
-export default Home;

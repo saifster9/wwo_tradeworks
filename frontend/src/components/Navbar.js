@@ -39,8 +39,7 @@ function Navbar() {
             ) : (
                 <>
                     <Link to="/">Home</Link>
-                    <Link to="/login">User Login</Link>
-                    <Link to="/admin">Admin Login</Link>
+                    <Link to="/login">Login</Link>
                     <Link to="/register">Register</Link>
                 </>
             )}
