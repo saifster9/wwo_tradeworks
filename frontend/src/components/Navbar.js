@@ -27,7 +27,7 @@ function Navbar() {
                         Logout
                     </Link>
                 </>
-            ) : location.pathname === '/admin-dashboard' || location.pathname === '/manage-stocks' || location.pathname === '/market-settings' ? (
+            ) : location.pathname === '/admin-dashboard' || location.pathname === '/manage-stocks' || location.pathname === '/manage-market' ? (
                 <>
                     <Link to="/admin-dashboard">Dashboard</Link>
                     <Link to="/manage-stocks">Manage Stocks</Link>
