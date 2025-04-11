@@ -1,19 +1,24 @@
+// src/pages/UserDashboard.js
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import '../styles/new_styles.css';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
+import useMarketStatus from '../hooks/useMarketStatus';
 
 function UserDashboard() {
-  const navigate = useNavigate();
-  const { user } = useContext(UserContext);
-  const userId = user.userId;
-  const firstName = user.firstName;
+  const navigate    = useNavigate();
+  const { user }    = useContext(UserContext);
+  const userId      = user.userId;
+  const firstName   = user.firstName;
 
-  // Local state for cash balance
+  // Shared market status hook
+  const marketOpen  = useMarketStatus();
+
+  // Cash balance state
   const [cashBalance, setCashBalance] = useState(0.00);
 
-  // Fetch cash balance (wrapped in useCallback so effect deps are stable)
+  // Fetch cash balance
   const fetchBalance = useCallback(async () => {
     try {
       const resp = await axios.get(`http://localhost:5000/api/user-balances/${userId}`);
@@ -23,7 +28,6 @@ function UserDashboard() {
     }
   }, [userId]);
 
-  // When userId becomes available, fetch balance
   useEffect(() => {
     if (!userId) return;
     fetchBalance();
@@ -32,6 +36,19 @@ function UserDashboard() {
   return (
     <div className="dashboard-container">
       <h2>Welcome to your Dashboard, {firstName}</h2>
+      
+
+      {/* Market Status */}
+      <div className="admin-section">
+      <h3>Market Status:</h3>
+        <p>
+          {marketOpen === null
+            ? 'Loading…'
+            : marketOpen
+              ? 'Open for Trading'
+              : 'Closed'}
+        </p>
+      </div>
 
       {/* Cash Balance Section */}
       <div className="admin-section">
@@ -46,6 +63,7 @@ function UserDashboard() {
         <button
           className="admin-dashboard-button"
           onClick={() => navigate('/portfolio')}
+          disabled={marketOpen === false}
         >
           Manage Portfolio
         </button>

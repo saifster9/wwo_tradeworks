@@ -1,23 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate
+import { useNavigate } from 'react-router-dom';
+import useMarketStatus from '../hooks/useMarketStatus';
 
 function AdminDashboard() {
-    const [marketOpen, setMarketOpen] = useState(false);
     const [stocks, setStocks] = useState([]);
     const [marketSchedule, setMarketSchedule] = useState([]);
-    const navigate = useNavigate(); // Initialize navigate
+    const navigate = useNavigate();
+    const marketOpen = useMarketStatus();
 
     useEffect(() => {
-        const fetchMarketStatus = async () => {
-            try {
-                const response = await axios.get('http://localhost:5000/api/market/market-open');
-                setMarketOpen(response.data.open);
-            } catch (error) {
-                console.error('Error fetching market status:', error);
-            }
-        };
-
         const fetchStocks = async () => {
             try {
                 const response = await axios.get('http://localhost:5000/api/stocks');
@@ -36,7 +28,6 @@ function AdminDashboard() {
             }
         };
 
-        fetchMarketStatus();
         fetchStocks();
         fetchMarketSchedule();
     }, []);
@@ -81,7 +72,14 @@ function AdminDashboard() {
             {/* Display Market Schedule */}
             <div className="admin-section">
                 <h3>Market Schedule</h3>
-                <p>Market Status: {marketOpen ? 'Open' : 'Closed'}</p>
+                <h4>Market Status:</h4>
+                <p>
+                    {marketOpen === null
+                        ? 'Loading…'
+                        : marketOpen
+                            ? 'Open'
+                            : 'Closed'}
+                </p>
                 <p>Current Trading Days and Hours:</p>
                 {marketSchedule.length > 0 ? (
                     <ul>

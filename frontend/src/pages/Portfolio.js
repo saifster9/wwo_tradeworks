@@ -4,12 +4,13 @@ import '../styles/new_styles.css';
 import { UserContext } from '../context/UserContext';
 import Select from 'react-select';
 import ConfirmModal from '../components/ConfirmModal';
-
+import useMarketStatus from '../hooks/useMarketStatus';
 
 function Portfolio() {
   const { user } = useContext(UserContext);
   const userId    = user.userId;
   const firstName = user.firstName;
+  const marketOpen = useMarketStatus();
 
   // Cash states
   const [cashBalance, setCashBalance] = useState(0);
@@ -163,6 +164,18 @@ function Portfolio() {
     <div className="dashboard-container">
       <h2>{firstName}'s Portfolio</h2>
 
+      {/* Market Status */}
+      <div className="admin-section">
+        <h3>Market Status</h3>
+        <p>
+          {marketOpen === null
+            ? 'Loading...'
+            : marketOpen
+              ? 'The market is open.'
+              : 'The market is closed.'}
+        </p>
+      </div>
+
       {/* Unified Cash Transaction */}
       <div className="admin-section">
         <h3>Cash Transaction</h3>
@@ -254,7 +267,7 @@ function Portfolio() {
             Sell
           </label>
 
-          <button type="submit">
+          <button type="submit" disabled={marketOpen === false}>
             {tradeType === 'buy' ? 'Buy' : 'Sell'}
           </button>
         </form>

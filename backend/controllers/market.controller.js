@@ -4,55 +4,49 @@ const { Op } = require('sequelize');
 
 exports.isMarketOpen = async (req, res) => {
     try {
-        const now = new Date();
-        // Calculate EST time (note: this method uses a fixed offset of -5 hours; consider handling daylight savings if needed)
-        const estOffset = -5 * 60; // EST offset in minutes
-        const estDate = new Date(now.getTime() + estOffset * 60 * 1000);
-        const dayOfWeek = estDate.getDay();
-        const currentHour = estDate.getHours();
-        const currentMinute = estDate.getMinutes();
-
-        // Retrieve the schedule for the current day of the week
-        const schedule = await MarketSchedule.findOne({ where: { day_of_week: dayOfWeek } });
-
-        if (schedule && schedule.isTradingDay) {
-            const openTimeStr = schedule.open_time;  // e.g., "09:30:00"
-            const closeTimeStr = schedule.close_time; // e.g., "16:00:00"
-
-            if (openTimeStr && closeTimeStr) {
-                // Parse the open time string into hours and minutes
-                const [openHour, openMinute] = openTimeStr.split(':').map(Number);
-                // Parse the close time string into hours and minutes
-                const [closeHour, closeMinute] = closeTimeStr.split(':').map(Number);
-
-                // Check if the current EST time is after the opening time
-                const afterOpen = (currentHour > openHour) || (currentHour === openHour && currentMinute >= openMinute);
-                // Check if the current EST time is before the closing time
-                const beforeClose = (currentHour < closeHour) || (currentHour === closeHour && currentMinute <= closeMinute);
-
-                if (afterOpen && beforeClose) {
-                    // Check if today is a holiday: using the ISO date string (YYYY-MM-DD)
-                    const estDateStr = estDate.toISOString().split('T')[0];
-                    const isHoliday = await Holiday.findOne({
-                        where: {
-                            holiday_date: {
-                                [Op.eq]: estDateStr
-                            }
-                        }
-                    });
-                    if (!isHoliday) {
-                        return res.json({ open: true });
-                    }
-                }
-            }
-        }
-
-        return res.json({ open: false });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ message: 'Error checking market status' });
+      // Get current time in EST
+      const nowEST = new Date(
+        new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
+      );
+      const dayOfWeek    = nowEST.getDay();
+      const currentHour  = nowEST.getHours();
+      const currentMinute= nowEST.getMinutes();
+  
+      // Fetch schedule
+      const schedule = await MarketSchedule.findOne({ where: { day_of_week: dayOfWeek } });
+      if (!schedule || !schedule.isTradingDay) {
+        return res.json({ isOpen: false });
+      }
+  
+      const [openHour, openMinute]   = schedule.open_time.split(':').map(Number);
+      const [closeHour, closeMinute] = schedule.close_time.split(':').map(Number);
+  
+      const afterOpen  = (currentHour > openHour)  || (currentHour === openHour  && currentMinute >= openMinute);
+      const beforeClose= (currentHour < closeHour) || (currentHour === closeHour && currentMinute <= closeMinute);
+  
+      if (!afterOpen || !beforeClose) {
+        return res.json({ isOpen: false });
+      }
+  
+      // Holiday check
+      const estDateStr = nowEST.toISOString().split('T')[0];
+      console.log('Checking holiday for', estDateStr);
+      const isHoliday = await Holiday.findOne({
+        where: { holiday_date: { [Op.eq]: estDateStr } }
+      });
+      console.log('Holiday found:', isHoliday);
+      if (isHoliday) {
+        return res.json({ isOpen: false });
+      }
+  
+      // All checks passed
+      return res.json({ isOpen: true });
+  
+    } catch (err) {
+      console.error('Error checking market status:', err);
+      res.status(500).json({ isOpen: false, error: err.message });
     }
-};
+  };
 
 exports.getMarketSchedule = async (req, res) => {
     try {
