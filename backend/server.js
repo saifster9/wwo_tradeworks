@@ -24,6 +24,7 @@ app.use('/api/user-balances', userBalanceRoutes);
 app.use('/api/cash-transactions', cashTxRoutes);
 app.use('/api/stock-transactions', stockTxRoutes);
 app.use('/api/user-holdings', userHoldingRoutes);
+app.use('/api/stock-transactions', stockTxRoutes);
 
 // Sync the database and then seed the market_schedule table if necessary
 sequelize.sync()

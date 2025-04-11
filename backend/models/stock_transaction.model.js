@@ -17,7 +17,7 @@ const StockTransaction = sequelize.define('StockTransaction', {
 });
 
 StockTransaction.belongsTo(User, { foreignKey: 'userId' });
-StockTransaction.belongsTo(Stock, { foreignKey: 'stockId' });
+StockTransaction.belongsTo(Stock, { foreignKey: 'stockId'});
 User.hasMany(StockTransaction, { foreignKey: 'userId', as: 'stockTransactions' });
 Stock.hasMany(StockTransaction, { foreignKey: 'stockId', as: 'transactions' });
 
