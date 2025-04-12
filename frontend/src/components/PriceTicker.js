@@ -1,32 +1,23 @@
-// src/components/PriceTicker.js
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import axios from 'axios';
-import '../styles/PriceTicker.css'; // You can style as you like
+import '../styles/PriceTicker.css';
 
-export default function PriceTicker({ refreshInterval = 60_000 }) {
+export default function PriceTicker({ refreshInterval = 60000 }) {
   const [stocks, setStocks] = useState([]);
-  const [error, setError]   = useState('');
+  const containerRef = useRef(null);
 
   useEffect(() => {
     let isMounted = true;
-
     const fetchStocks = async () => {
       try {
         const resp = await axios.get('http://localhost:5000/api/stocks');
-        if (isMounted) {
-          setStocks(resp.data);
-          setError('');
-        }
+        if (isMounted) setStocks(resp.data);
       } catch (err) {
         console.error('Error fetching stocks for ticker:', err);
-        if (isMounted) setError('Unable to load prices');
       }
     };
 
-    // Initial load
     fetchStocks();
-
-    // Poll every refreshInterval ms
     const id = setInterval(fetchStocks, refreshInterval);
     return () => {
       isMounted = false;
@@ -34,18 +25,21 @@ export default function PriceTicker({ refreshInterval = 60_000 }) {
     };
   }, [refreshInterval]);
 
-  if (error) {
-    return <div className="price-ticker error">{error}</div>;
-  }
+  // Duplicate the list to make the loop seamless
+  const displayList = [...stocks, ...stocks];
 
   return (
     <div className="price-ticker">
-      {stocks.map(stock => (
-        <div key={stock.id} className="ticker-item">
-          <span className="ticker-symbol">{stock.stockTicker}</span>
-          <span className="ticker-price">${parseFloat(stock.initialSharePrice).toFixed(2)}</span>
-        </div>
-      ))}
+      <div className="ticker-track" ref={containerRef}>
+        {displayList.map((stock, idx) => (
+          <div key={`${stock.id}-${idx}`} className="ticker-item">
+            <span className="ticker-symbol">{stock.stockTicker}</span>
+            <span className="ticker-price">
+              ${parseFloat(stock.initialSharePrice).toFixed(2)}
+            </span>
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
