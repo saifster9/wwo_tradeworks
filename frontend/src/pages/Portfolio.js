@@ -222,6 +222,12 @@ function Portfolio() {
       {/* Stock Transaction */}
       <div className="dashboard-style">
         <h3>Stock Transaction</h3>
+
+        {/* If market is closed, show a warning */}
+        {marketOpen === false && (
+          <p className="error-message" style={{ color: 'red' }}>The market is currently closed. Trades cannot be executed at this time.</p>
+        )}
+
         {stockWarning && <p className="error-message">{stockWarning}</p>}
 
         <form onSubmit={handleStockSubmit} className="flex-form">
