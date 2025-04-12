@@ -1,0 +1,8 @@
+.transaction-history-card .stock-table {
+    width: 100%;
+    border-collapse: separate;  /* allow rounded corners */
+    border-spacing: 0;          /* remove spacing between cells */
+    border: 1px solid var(--border-color); /* outer border */
+    border-radius: 8px;         /* round the corners */
+    overflow: hidden;           /* clip inner cell borders */
+    }

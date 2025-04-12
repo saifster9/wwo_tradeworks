@@ -1,4 +1,3 @@
-// controllers/stockTransaction.controller.js
 const { Stock, StockTransaction, UserHolding, UserBalance } = require('../models');
 const sequelize = require('../config/db.config');
 
@@ -129,14 +128,14 @@ exports.getUserStockHistory = async (req, res) => {
       where: { userId },
       include: [{
         model: Stock,
-        as: 'stock',
-        attributes: ['stockTicker', 'companyName']
+        as: 'Stock',
+        attributes: ['stockTicker']
       }],
       order: [['createdAt', 'DESC']]
     });
     res.json(history);
   } catch (err) {
-    console.error('Error in getUserStockHistory:', err);
+    console.error('Error fetching stock history:', err);
     res.status(500).json({ message: err.message });
   }
 };

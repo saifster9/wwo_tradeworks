@@ -43,7 +43,7 @@ module.exports = (sequelize, DataTypes) => {
     });
     StockTransaction.belongsTo(Stock, {
       foreignKey: 'stockId',
-      as: 'stock'
+      as: 'Stock'
     });
     User.hasMany(StockTransaction, {
       foreignKey: 'userId',

@@ -135,37 +135,40 @@ function UserDashboard() {
           <div className="dashboard-style">
             <h3>Recent Stock Transactions</h3>
             {recentTx.length > 0 ? (
-              <table className="stock-table">
-                <thead>
-                  <tr>
-                    <th>Date</th>
-                    <th>Type</th>
-                    <th>Ticker</th>
-                    <th>Quantity</th>
-                    <th>Price/Share</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {recentTx.map(tx => (
-                    <tr key={tx.id}>
-                      <td>{formatDateDDMMYY(tx.createdAt)}</td>
-                      <td>{tx.transactionType}</td>
-                      <td>{tx.stock.stockTicker}</td>
-                      <td>{tx.quantity}</td>
-                      <td>${parseFloat(tx.pricePerShare).toFixed(2)}</td>
+              <>
+                <table className="stock-table">
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Type</th>
+                      <th>Ticker</th>
+                      <th>Quantity</th>
+                      <th>Price/Share</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
+                  </thead>
+                  <tbody>
+                    {recentTx.map(tx => (
+                      <tr key={tx.id}>
+                        <td>{formatDateDDMMYY(tx.createdAt)}</td>
+                        <td>{tx.transactionType}</td>
+                        <td>{(tx.Stock || tx.stock)?.stockTicker || '—'}</td>
+                        <td>{tx.quantity}</td>
+                        <td>${parseFloat(tx.pricePerShare).toFixed(2)}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <button
+                className="admin-dashboard-button"
+                onClick={() => navigate('/transaction-history')}
+                            >
+                View All Transactions
+                            </button>
+              </>
             ) : (
               <>
                 <p>You have no recent stock transactions.</p>
-                <button
-                  className="admin-dashboard-button"
-                  onClick={() => navigate('/transaction-history')}
-                >
-                  View All Transactions
-                </button>
+                
               </>
             )}
           </div>

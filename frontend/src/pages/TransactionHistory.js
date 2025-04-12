@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
 import axios from 'axios';
 import '../styles/new_styles.css';
+import '../styles/TransactionHistory.css';
 import { UserContext } from '../context/UserContext';
 
 function TransactionHistory() {
@@ -40,60 +41,64 @@ function TransactionHistory() {
     <div className="dashboard-container">
       <h2>Transaction History</h2>
 
-      {/* Cash Transactions */}
-      <div className="dashboard-style">
-        <h3>Cash Transactions</h3>
-        {cashTx.length === 0 ? (
-          <p>No cash transactions yet.</p>
-        ) : (
-          <table className="stock-table">
-            <thead>
-              <tr>
-                <th>Date</th><th>Type</th><th>Amount</th>
-              </tr>
-            </thead>
-            <tbody>
-              {cashTx.map(tx => (
-                <tr key={tx.id}>
-                  <td>{new Date(tx.createdAt).toLocaleString()}</td>
-                  <td>{tx.transactionType}</td>
-                  <td>${parseFloat(tx.amount).toFixed(2)}</td>
+      <div className="transaction-history-card">
+        {/* Cash Transactions */}
+        <div className="dashboard-style">
+          <h3>Cash Transactions</h3>
+          {cashTx.length === 0 ? (
+            <p>No cash transactions yet.</p>
+          ) : (
+            <table className="stock-table">
+              <thead>
+                <tr>
+                  <th>Date</th><th>Type</th><th>Amount</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {cashTx.map(tx => (
+                  <tr key={tx.id}>
+                    <td>{new Date(tx.createdAt).toLocaleString()}</td>
+                    <td>{tx.transactionType}</td>
+                    <td>${parseFloat(tx.amount).toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
 
-      {/* Stock Transactions */}
-      <div className="dashboard-style">
-        <h3>Stock Transactions</h3>
-        {stockTx.length === 0 ? (
-          <p>No stock transactions yet.</p>
-        ) : (
-          <table className="stock-table">
-            <thead>
-              <tr>
-                <th>Date</th>
-                <th>Type</th>
-                <th>Stock</th>
-                <th>Qty</th>
-                <th>Price/Share</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stockTx.map(tx => (
-                <tr key={tx.id}>
-                  <td>{new Date(tx.createdAt).toLocaleString()}</td>
-                  <td>{tx.transactionType}</td>
-                  <td>{tx.Stock.stockTicker}</td>
-                  <td>{tx.quantity}</td>
-                  <td>${parseFloat(tx.pricePerShare).toFixed(2)}</td>
+      <div className="transaction-history-card">
+        {/* Stock Transactions */}
+        <div className="dashboard-style">
+          <h3>Stock Transactions</h3>
+          {stockTx.length === 0 ? (
+            <p>No stock transactions yet.</p>
+          ) : (
+            <table className="stock-table">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Type</th>
+                  <th>Stock</th>
+                  <th>Qty</th>
+                  <th>Price/Share</th>
                 </tr>
-              ))}
-            </tbody>
-          </table>
-        )}
+              </thead>
+              <tbody>
+                {stockTx.map(tx => (
+                  <tr key={tx.id}>
+                    <td>{new Date(tx.createdAt).toLocaleString()}</td>
+                    <td>{tx.transactionType}</td>
+                    <td>{tx.Stock?.stockTicker || '—'}</td>
+                    <td>{tx.quantity}</td>
+                    <td>${parseFloat(tx.pricePerShare).toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
       </div>
     </div>
   );
