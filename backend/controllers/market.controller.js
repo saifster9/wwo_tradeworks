@@ -1,52 +1,20 @@
 const Holiday = require('../models/holiday.model');
 const MarketSchedule = require('../models/market_schedule.model');
 const { Op } = require('sequelize');
+const { isMarketOpenInternal } = require('../utils/marketStatus');
 
 exports.isMarketOpen = async (req, res) => {
     try {
-      // Get current time in EST
-      const nowEST = new Date(
-        new Date().toLocaleString('en-US', { timeZone: 'America/New_York' })
-      );
-      const dayOfWeek    = nowEST.getDay();
-      const currentHour  = nowEST.getHours();
-      const currentMinute= nowEST.getMinutes();
-  
-      // Fetch schedule
-      const schedule = await MarketSchedule.findOne({ where: { day_of_week: dayOfWeek } });
-      if (!schedule || !schedule.isTradingDay) {
-        return res.json({ isOpen: false });
-      }
-  
-      const [openHour, openMinute]   = schedule.open_time.split(':').map(Number);
-      const [closeHour, closeMinute] = schedule.close_time.split(':').map(Number);
-  
-      const afterOpen  = (currentHour > openHour)  || (currentHour === openHour  && currentMinute >= openMinute);
-      const beforeClose= (currentHour < closeHour) || (currentHour === closeHour && currentMinute <= closeMinute);
-  
-      if (!afterOpen || !beforeClose) {
-        return res.json({ isOpen: false });
-      }
-  
-      // Holiday check
-      const estDateStr = nowEST.toISOString().split('T')[0];
-      console.log('Checking holiday for', estDateStr);
-      const isHoliday = await Holiday.findOne({
-        where: { holiday_date: { [Op.eq]: estDateStr } }
-      });
-      console.log('Holiday found:', isHoliday);
-      if (isHoliday) {
-        return res.json({ isOpen: false });
-      }
-  
-      // All checks passed
-      return res.json({ isOpen: true });
-  
+      const open = await isMarketOpenInternal();
+      res.json({ open });
     } catch (err) {
-      console.error('Error checking market status:', err);
-      res.status(500).json({ isOpen: false, error: err.message });
-    }
-  };
+        console.error('Error in isMarketOpen:', err);
+        res.status(500).json({
+          message: 'Error checking market status',
+          error: err.message
+        });
+      }
+  };  
 
 exports.getMarketSchedule = async (req, res) => {
     try {
@@ -55,7 +23,7 @@ exports.getMarketSchedule = async (req, res) => {
         });
         res.json(schedule);
     } catch (error) {
-        console.error(error);
+        console.error('Error in isMarketOpen:', error);
         res.status(500).json({ message: 'Error fetching market schedule' });
     }
 };

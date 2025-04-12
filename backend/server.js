@@ -10,6 +10,7 @@ const defaultMarketSchedule = require('./data/defaultMarketSchedule');
 const cashTxRoutes = require('./routes/cashTransaction.routes');
 const stockTxRoutes = require('./routes/stockTransaction.routes');
 const userHoldingRoutes = require('./routes/userHolding.routes');
+const { isMarketOpenInternal } = require('./utils/marketStatus');
 
 const app = express();
 
@@ -30,6 +31,29 @@ app.use('/api/stock-transactions', stockTxRoutes);
 sequelize.sync()
   .then(() => {
     console.log('Database connected!');
+
+    // Start the price ticker
+  const TICK_INTERVAL_MS = 60 * 1000; // 1 minute
+
+  setInterval(async () => {
+    try {
+      const open = await isMarketOpenInternal();
+      if (!open) return;
+
+      const stocks = await Stock.findAll();
+      for (let stock of stocks) {
+        const oldPrice = parseFloat(stock.initialSharePrice);
+        const maxPct = 0.005; // 0.5%
+        const pctChange = (Math.random() * 2 - 1) * maxPct;
+        const newPrice = +(oldPrice * (1 + pctChange)).toFixed(2);
+
+        await stock.update({ initialSharePrice: newPrice });
+      }
+      console.log('Prices ticked at', new Date().toISOString());
+    } catch (err) {
+      console.error('Error in price ticker:', err);
+    }
+  }, TICK_INTERVAL_MS);
 
     // Check if the table is empty
     return MarketSchedule.count();
