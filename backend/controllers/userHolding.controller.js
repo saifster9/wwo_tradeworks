@@ -1,5 +1,5 @@
-const UserHolding = require('../models/user_holding.model');
-const Stock       = require('../models/stock.model');
+// controllers/userHolding.controller.js
+const { UserHolding, Stock } = require('../models');
 
 exports.getUserHoldings = async (req, res) => {
   const { userId } = req.params;
@@ -14,7 +14,10 @@ exports.getUserHoldings = async (req, res) => {
     });
     res.json(holdings);
   } catch (err) {
-    console.error('Error fetching holdings:', err);
-    res.status(500).json({ message: 'Error fetching holdings' });
+    console.error('Error in getUserHoldings:', err);
+    res.status(500).json({
+      message: 'Error fetching holdings',
+      error: err.message
+    });
   }
 };

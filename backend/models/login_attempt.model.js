@@ -1,22 +1,22 @@
-const { DataTypes } = require('sequelize');
-const sequelize = require('../config/db.config');
-
-const LoginAttempt = sequelize.define('LoginAttempt', {
-    username: {
+module.exports = (sequelize, DataTypes) => {
+    const LoginAttempt = sequelize.define('LoginAttempt', {
+      username: {
         type: DataTypes.STRING,
         allowNull: false
-    },
-    timestamp: {
+      },
+      timestamp: {
         type: DataTypes.DATE,
         defaultValue: DataTypes.NOW
-    },
-    ip_address: {
+      },
+      ip_address: {
         type: DataTypes.STRING,
         allowNull: false
-    }
-}, {
-    tableName: 'login_attempts', // Ensure table name is explicitly set
-    timestamps: false          // Disable Sequelize's default timestamps
-});
-
-module.exports = LoginAttempt;
+      }
+    }, {
+      tableName: 'login_attempts',
+      timestamps: false // Disable createdAt/updatedAt
+    });
+  
+    // No associations to define
+    return LoginAttempt;
+  };  

@@ -148,9 +148,9 @@ function UserDashboard() {
                 <tbody>
                   {recentTx.map(tx => (
                     <tr key={tx.id}>
-                      <td>{formatDateDDMMYY(tx.createdAt).toLocaleString()}</td>
+                      <td>{formatDateDDMMYY(tx.createdAt)}</td>
                       <td>{tx.transactionType}</td>
-                      <td>{tx.Stock.stockTicker}</td>
+                      <td>{tx.stock.stockTicker}</td>
                       <td>{tx.quantity}</td>
                       <td>${parseFloat(tx.pricePerShare).toFixed(2)}</td>
                     </tr>

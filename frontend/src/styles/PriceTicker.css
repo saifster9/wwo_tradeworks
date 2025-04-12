@@ -1,0 +1,25 @@
+/* src/styles/PriceTicker.css */
+.price-ticker {
+    display: flex;
+    overflow-x: auto;
+    background: #f9f9f9;
+    padding: 8px;
+    border-radius: 4px;
+  }
+  .ticker-item {
+    margin-right: 24px;
+    display: flex;
+    align-items: baseline;
+  }
+  .ticker-symbol {
+    font-weight: bold;
+    margin-right: 4px;
+  }
+  .ticker-price {
+    color: #333;
+  }
+  .price-ticker.error {
+    color: red;
+    padding: 8px;
+  }
+  

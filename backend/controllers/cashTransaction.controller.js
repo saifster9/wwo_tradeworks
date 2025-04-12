@@ -1,5 +1,5 @@
-const CashTransaction = require('../models/cash_transaction.model');
-const UserBalance = require('../models/user_balance.model');
+// controllers/cashTransaction.controller.js
+const { CashTransaction, UserBalance } = require('../models');
 const sequelize = require('../config/db.config');
 
 exports.createTransaction = async (req, res) => {
@@ -51,7 +51,7 @@ exports.createTransaction = async (req, res) => {
     return res.status(201).json({ message: 'Transaction successful', transaction: tx });
   } catch (err) {
     await t.rollback();
-    console.error(err);
+    console.error('Error in createTransaction:', err);
     return res.status(500).json({ message: 'Error processing transaction', error: err.message });
   }
 };
@@ -65,7 +65,7 @@ exports.getTransactions = async (req, res) => {
     });
     res.json(transactions);
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ message: 'Error fetching transactions' });
+    console.error('Error in getTransactions:', err);
+    res.status(500).json({ message: 'Error fetching transactions', error: err.message });
   }
 };

@@ -5,6 +5,7 @@ import { UserContext } from '../context/UserContext';
 import Select from 'react-select';
 import ConfirmModal from '../components/ConfirmModal';
 import useMarketStatus from '../hooks/useMarketStatus';
+import PriceTicker from '../components/PriceTicker';
 
 function Portfolio() {
   const { user } = useContext(UserContext);
@@ -162,6 +163,10 @@ function Portfolio() {
 
   return (
     <div className="dashboard-container">
+      
+      {/* Live Price Ticker */}
+      <PriceTicker refreshInterval={60_000} />
+
       <h2>{firstName}'s Portfolio</h2>
 
       {/* Market Status */}

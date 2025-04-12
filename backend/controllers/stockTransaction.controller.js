@@ -1,8 +1,6 @@
-const sequelize        = require('../config/db.config');
-const Stock            = require('../models/stock.model');
-const StockTransaction = require('../models/stock_transaction.model');
-const UserHolding      = require('../models/user_holding.model');
-const UserBalance      = require('../models/user_balance.model');
+// controllers/stockTransaction.controller.js
+const { Stock, StockTransaction, UserHolding, UserBalance } = require('../models');
+const sequelize = require('../config/db.config');
 
 // Buy stock
 exports.buyStock = async (req, res) => {
@@ -30,16 +28,24 @@ exports.buyStock = async (req, res) => {
       return res.status(400).json({ message: 'Insufficient cash balance for purchase' });
     }
 
+    // Deduct cash
     userBal.cash_balance = parseFloat(userBal.cash_balance) - totalCost;
     await userBal.save({ transaction: t });
 
+    // Reduce available shares
     stock.totalSharesAvailable -= qty;
     await stock.save({ transaction: t });
 
+    // Record transaction
     await StockTransaction.create({
-      userId, stockId, quantity: qty, pricePerShare, transactionType: 'buy'
+      userId,
+      stockId,
+      quantity: qty,
+      pricePerShare,
+      transactionType: 'buy'
     }, { transaction: t });
 
+    // Update or create holding
     const [holding, created] = await UserHolding.findOrCreate({
       where: { userId, stockId },
       defaults: { shares: qty },
@@ -80,17 +86,25 @@ exports.sellStock = async (req, res) => {
     const pricePerShare = parseFloat(stock.initialSharePrice);
     const proceeds      = pricePerShare * qty;
 
+    // Credit cash
     const userBal = await UserBalance.findOne({ where: { userId }, transaction: t });
     userBal.cash_balance = parseFloat(userBal.cash_balance) + proceeds;
     await userBal.save({ transaction: t });
 
+    // Increase available shares
     stock.totalSharesAvailable += qty;
     await stock.save({ transaction: t });
 
+    // Record transaction
     await StockTransaction.create({
-      userId, stockId, quantity: qty, pricePerShare, transactionType: 'sell'
+      userId,
+      stockId,
+      quantity: qty,
+      pricePerShare,
+      transactionType: 'sell'
     }, { transaction: t });
 
+    // Update holding
     holding.shares -= qty;
     if (holding.shares === 0) {
       await holding.destroy({ transaction: t });
@@ -115,13 +129,14 @@ exports.getUserStockHistory = async (req, res) => {
       where: { userId },
       include: [{
         model: Stock,
+        as: 'stock',
         attributes: ['stockTicker', 'companyName']
       }],
       order: [['createdAt', 'DESC']]
     });
     res.json(history);
   } catch (err) {
-    console.error('Error fetching stock history:', err);
+    console.error('Error in getUserStockHistory:', err);
     res.status(500).json({ message: err.message });
   }
 };
