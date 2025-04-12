@@ -1,0 +1,12 @@
+.dashboard-grid {
+    display:  grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+  }
+  
+  .card {
+    background: var(--card-bg);
+    padding: 16px;
+    border-radius: 8px;
+    box-shadow: var(--card-shadow);
+  }
