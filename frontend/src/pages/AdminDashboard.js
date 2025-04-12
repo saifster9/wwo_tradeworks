@@ -3,6 +3,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import useMarketStatus from '../hooks/useMarketStatus';
 import WeeklySchedule from '../components/WeeklySchedule';
+import '../styles/AdminDashboard.css';
 
 function AdminDashboard() {
   const [stocks, setStocks] = useState([]);
@@ -42,69 +43,90 @@ function AdminDashboard() {
     <div className="dashboard-container">
       <h2>Admin Dashboard</h2>
 
-      {/* Display Stocks */}
-      <div className="admin-section">
-        <h3>Existing Stocks</h3>
-        {stocks.length > 0 ? (
-          <table>
-            <thead>
-              <tr>
-                <th>Company Name</th>
-                <th>Stock Ticker</th>
-                <th>Price</th>
-              </tr>
-            </thead>
-            <tbody>
-              {stocks.map(stock => (
-                <tr key={stock.id}>
-                  <td>{stock.companyName}</td>
-                  <td>{stock.stockTicker}</td>
-                  <td>{stock.initialSharePrice}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        ) : (
-          <p>No stocks available.</p>
-        )}
-        <button onClick={() => navigate('/manage-stocks')}>Manage Stocks</button>
-      </div>
+      <div className="dashboard-grid">
 
-      {/* Market Status */}
-      <div className="admin-section">
-        <h3>Market Status</h3>
-        <p>
-          {marketOpen === null
-            ? 'Loading…'
-            : marketOpen
-              ? 'Open'
-              : 'Closed'}
-        </p>
-      </div>
+        <div className="card">
+          {/* Display Stocks */}
+          <div className="dashboard-style">
+            <h3>Existing Stocks</h3>
+            {stocks.length > 0 ? (
+              <table>
+                <thead>
+                  <tr>
+                    <th>Company Name</th>
+                    <th>Stock Ticker</th>
+                    <th>Price</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {stocks.map(stock => (
+                    <tr key={stock.id}>
+                      <td>{stock.companyName}</td>
+                      <td>{stock.stockTicker}</td>
+                      <td>{stock.initialSharePrice}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            ) : (
+              <p>No stocks available.</p>
+            )}
+            <button onClick={() => navigate('/manage-stocks')}>Manage Stocks</button>
+          </div>
+        </div>
 
-      {/* Calendar‑style Weekly View */}
-      <div className="admin-section">
-        <h3>Weekly Market Schedule</h3>
-        <WeeklySchedule schedule={marketSchedule} />
-      </div>
+        <div className="card">
+          {/* Market Status */}
+          <div className="dashboard-style">
+            <h3>Market Status</h3>
+            <p>
+              {marketOpen === null
+                ? 'Loading…'
+                : marketOpen
+                  ? 'Open'
+                  : 'Closed'}
+            </p>
+          </div>
+        </div>
 
-      {/* Fallback List View */}
-      <div className="admin-section">
-        <h3>Current Trading Days and Hours</h3>
-        {marketSchedule.length > 0 ? (
-          <ul>
-            {marketSchedule.map(day => (
-              <li key={day.day_of_week}>
-                {getDayName(day.day_of_week)}:{' '}
-                {day.open_time?.substring(0,5) || '00:00'} -{' '}
-                {day.close_time?.substring(0,5) || '00:00'}
-              </li>
-            ))}
-          </ul>
-        ) : (
-          <p>No market schedule available.</p>
-        )}
-        <button onClick={() => navigate('/manage-market')}>Manage Market</button>
+        <div className="card">
+          {/* Calendar‑style Weekly View */}
+          <div className="dashboard-style">
+            <h3>Weekly Market Schedule</h3>
+            <WeeklySchedule schedule={marketSchedule} />
+          </div>
+        </div>
+
+        <div className="card">
+          {/* Fallback List View */}
+          <div className="dashboard-style">
+            <h3>Current Trading Days and Hours</h3>
+            {marketSchedule.length > 0 ? (
+              (() => {
+                // Filter only trading days
+                const tradingDays = marketSchedule.filter(day => day.isTradingDay);
+                return tradingDays.length > 0 ? (
+                  <ul>
+                    {tradingDays.map(day => (
+                      <li key={day.day_of_week}>
+                        {getDayName(day.day_of_week)}:{' '}
+                        {day.open_time?.substring(0,5) || '00:00'} –{' '}
+                        {day.close_time?.substring(0,5) || '00:00'}
+                      </li>
+                    ))}
+                  </ul>
+                ) : (
+                  <p>No trading days are currently enabled.</p>
+                );
+              })()
+            ) : (
+              <p>No market schedule available.</p>
+            )}
+            <button onClick={() => navigate('/manage-market')}>
+              Manage Market
+            </button>
+          </div>
+        </div>
       </div>
     </div>
   );

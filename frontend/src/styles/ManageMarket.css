@@ -1,0 +1,81 @@
+:root {
+  --primary-color: #3b6d3f; /* Deep Green */
+  --secondary-color: #6fbe9d; /* Vibrant Green */
+  --accent-color: #a9e5c9; /* Soft Green */
+  --light-color: #d4f2e7; /* Pastel Background */
+  --background-color: #f3f9f1; /* Soft White */
+  --text-color: #2c3e50; /* Deep Grey-Blue */
+  --button-hover: #29572c; /* Darker Green */
+  --shadow: 0px 5px 12px rgba(0, 0, 0, 0.15);
+  --border-radius: 10px;
+}
+
+.manage-market-container {
+  padding: 24px;
+}
+
+.trading-days-list {
+  margin-top: 24px;
+}
+.trading-days-list ul {
+  list-style: none;
+  padding: 0;
+}
+
+.holidays-section {
+  margin-top: 32px;
+  background: var(--card-bg);
+  padding: 16px;
+  border-radius: 8px;
+}
+
+
+
+.holiday-form label {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.9rem;
+}
+
+.holiday-form input {
+  padding: 4px 8px;
+  margin-top: 4px;
+}
+
+.holiday-form button {
+  padding: 6px 12px;
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.holiday-list {
+  flex-direction: row;
+  list-style: none;
+  padding: 0;
+  margin-top: 16px;
+}
+
+.holiday-list li {
+  padding: 4px 0;
+  border-bottom: 1px solid #ddd;
+}
+
+.delete-button {
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  cursor: pointer;
+}
+
+.clear-all {
+  margin-top: 12px;
+  background: var(--error-color);
+  color: white;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+}

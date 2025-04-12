@@ -165,7 +165,7 @@ function Portfolio() {
       <h2>{firstName}'s Portfolio</h2>
 
       {/* Market Status */}
-      <div className="admin-section">
+      <div className="dashboard-style">
         <h3>Market Status</h3>
         <p>
           {marketOpen === null
@@ -177,7 +177,7 @@ function Portfolio() {
       </div>
 
       {/* Unified Cash Transaction */}
-      <div className="admin-section">
+      <div className="dashboard-style">
         <h3>Cash Transaction</h3>
         <p>Balance: <strong>${cashBalance.toFixed(2)}</strong></p>
         {cashWarning && <p className="error-message">{cashWarning}</p>}
@@ -220,7 +220,7 @@ function Portfolio() {
       </div>
 
       {/* Stock Transaction */}
-      <div className="admin-section">
+      <div className="dashboard-style">
         <h3>Stock Transaction</h3>
         {stockWarning && <p className="error-message">{stockWarning}</p>}
 
@@ -274,7 +274,7 @@ function Portfolio() {
       </div>
 
       {/* User Holdings */}
-      <div className="admin-section">
+      <div className="dashboard-style">
         <h3>Your Stock Holdings</h3>
         {holdings.length === 0 ? (
           <p>You currently own no stocks.</p>

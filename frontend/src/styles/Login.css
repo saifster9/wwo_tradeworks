@@ -1,0 +1,27 @@
+:root {
+    --primary-color: #3b6d3f; /* Deep Green */
+    --secondary-color: #6fbe9d; /* Vibrant Green */
+    --accent-color: #a9e5c9; /* Soft Green */
+    --light-color: #d4f2e7; /* Pastel Background */
+    --background-color: #f3f9f1; /* Soft White */
+    --text-color: #2c3e50; /* Deep Grey-Blue */
+    --button-hover: #29572c; /* Darker Green */
+    --shadow: 0px 5px 12px rgba(0, 0, 0, 0.15);
+    --border-radius: 10px;
+}
+
+.login-container {
+    background: var(--light-color);
+    padding: 40px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
+    text-align: center;
+    width: 360px;
+    margin-top: 80px;
+}
+
+.login-container h2 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 26px;
+}

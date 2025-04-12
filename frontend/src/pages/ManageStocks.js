@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-    import axios from 'axios';
+import axios from 'axios';
+import '../styles/new_styles.css';
+import '../styles/ManageStocks.css';
     
     function ManageStocks() {
         const [stocks, setStocks] = useState([]);
@@ -77,7 +79,7 @@ import React, { useState, useEffect } from 'react';
                 <h2>Manage Stocks</h2>
     
                 {/* Create New Stock Section */}
-                <div className="admin-section">
+                <div className="dashboard-style">
                     <h3>Create New Stock</h3>
                     <form onSubmit={handleCreateStock}>
                         <label htmlFor="company-name">Company Name:</label>
@@ -132,7 +134,7 @@ import React, { useState, useEffect } from 'react';
                 </div>
     
                 {/* Stock List Section */}
-                <div className="admin-section">
+                <div className="dashboard-style">
                     <h3>Existing Stocks</h3>
                     {stocks.length > 0 ? (
                         <table className="stock-table">

@@ -41,7 +41,7 @@ function TransactionHistory() {
       <h2>Transaction History</h2>
 
       {/* Cash Transactions */}
-      <div className="admin-section">
+      <div className="dashboard-style">
         <h3>Cash Transactions</h3>
         {cashTx.length === 0 ? (
           <p>No cash transactions yet.</p>
@@ -66,7 +66,7 @@ function TransactionHistory() {
       </div>
 
       {/* Stock Transactions */}
-      <div className="admin-section">
+      <div className="dashboard-style">
         <h3>Stock Transactions</h3>
         {stockTx.length === 0 ? (
           <p>No stock transactions yet.</p>

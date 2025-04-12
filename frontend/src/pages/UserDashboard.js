@@ -39,7 +39,7 @@ function UserDashboard() {
       
 
       {/* Market Status */}
-      <div className="admin-section">
+      <div className="dashboard-style">
       <h3>Market Status:</h3>
         <p>
           {marketOpen === null
@@ -51,13 +51,13 @@ function UserDashboard() {
       </div>
 
       {/* Cash Balance Section */}
-      <div className="admin-section">
+      <div className="dashboard-style">
         <h3>Available Cash Balance</h3>
         <p>${cashBalance.toFixed(2)}</p>
       </div>
 
       {/* Portfolio Section */}
-      <div className="admin-section">
+      <div className="dashboard-style">
         <h3>Your Portfolio</h3>
         <p>You currently own no stocks.</p>
         <button
@@ -69,7 +69,7 @@ function UserDashboard() {
       </div>
 
       {/* Transaction History Section */}
-      <div className="admin-section">
+      <div className="dashboard-style">
         <h3>Transaction History</h3>
         <p>You have no transaction history yet.</p>
         <button

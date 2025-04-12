@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import '../styles/new_styles.css';
 import { UserContext } from '../context/UserContext';
+import '../styles/new_styles.css';
+import '../styles/Login.css';
 
 export default function Login() {
   const [username, setUsername]     = useState(localStorage.getItem('rememberUser') || '');

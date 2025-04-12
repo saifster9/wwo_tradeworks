@@ -79,7 +79,6 @@ button:hover {
 }
 
 /* Form Element Styles */
-
 label {
    display: block;
    text-align: left;
@@ -129,34 +128,12 @@ input:focus {
   .flex-form button {
     white-space: nowrap;
   }
-  
-/* Landing Page */
-.home-container {
-
-}
 
 .home-container p {
     font-size: 18px;
     margin-top: 20px;
     color: var(--text-color);
     text-align: center;
-}
-
-/* Login Page */
-.login-container {
-    background: var(--light-color);
-    padding: 40px;
-    border-radius: var(--border-radius);
-    box-shadow: var(--shadow);
-    text-align: center;
-    width: 360px;
-    margin-top: 80px;
-}
-
-.login-container h2 {
-    color: var(--primary-color);
-    margin-bottom: 15px;
-    font-size: 26px;
 }
 
 /* Dashboard Sections */
@@ -179,58 +156,7 @@ input:focus {
     box-shadow: var(--shadow);
 }
 
-/* Stock Actions - Buy & Sell Sections */
-.stock-table {
-    width: 100%;
-    border-collapse: collapse;
-    margin-top: 20px;
-}
-
-.stock-table th, .stock-table td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    text-align: left;
-}
-
-.stock-table th {
-    background-color: var(--secondary-color);
-    color: white;
-}
-
-/* Stock Actions - Buy & Sell Sections */
-.stock-actions {
-    display: flex;
-    justify-content: center;
-    gap: 30px;
-    margin: 30px auto;
-    width: 100%;
-    max-width: 900px;
-    align-items: stretch;
-}
-
-.stock-section {
-    text-align: center;
-    width: 45%;
-}
-
-.stock-section form {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    gap: 15px;
-}
-
-.stock-section input {
-    width: 45%;
-    padding: 10px;
-    border: 1px solid var(--secondary-color);
-    border-radius: var(--border-radius);
-    font-size: 16px;
-    margin: 0;
-}
-
-/* Admin Dashboard Sections */
-.admin-section {
+.dashboard-style {
     background: var(--light-color);
     padding: 25px;
     border-radius: var(--border-radius);
@@ -241,12 +167,12 @@ input:focus {
     margin: 30px auto;
 }
 
-.admin-section h3 {
+.dashboard-style h3 {
     color: var(--primary-color);
     font-size: 22px;
     margin-bottom: 10px;
 }
-.admin-section ul {
+.dashboard-style ul {
     list-style-type: none;
     padding: 0;
 }
@@ -270,7 +196,7 @@ input:focus {
         width: 100%;
     }
 
-    .admin-section {
+    .dashboard-style {
         width: 95%;
     }
 }
