@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import axios from 'axios';
+import apiClient from '../api/axiosConfig'; 
 import { UserContext } from '../context/UserContext';
 import Select from 'react-select';
 import ConfirmModal from '../components/ConfirmModal';
@@ -36,7 +36,7 @@ function Portfolio() {
   // Fetch cash balance
   const fetchBalance = useCallback(async () => {
     try {
-      const resp = await axios.get(`http://localhost:5000/api/user-balances/${userId}`);
+      const resp = await apiClient.get(`/api/user-balances/${userId}`);
       setCashBalance(parseFloat(resp.data.cash_balance));
     } catch (err) {
       console.error('Error fetching balance:', err);
@@ -46,7 +46,7 @@ function Portfolio() {
   // Fetch stocks and holdings
   const fetchStocks = useCallback(async () => {
     try {
-      const resp = await axios.get('http://localhost:5000/api/stocks');
+      const resp = await apiClient.get('/api/stocks');
       setStocks(resp.data);
     } catch (err) {
       console.error('Error fetching stocks:', err);
@@ -55,7 +55,7 @@ function Portfolio() {
 
   const fetchHoldings = useCallback(async () => {
     try {
-      const resp = await axios.get(`http://localhost:5000/api/user-holdings/${userId}`);
+      const resp = await apiClient.get(`/api/user-holdings/${userId}`);
       setHoldings(resp.data);
     } catch (err) {
       console.error('Error fetching holdings:', err);
@@ -82,7 +82,7 @@ function Portfolio() {
 
     try {
       const amt = cashType === 'withdraw' ? -num : num;
-      await axios.post('http://localhost:5000/api/cash-transactions', { userId, amount: amt });
+      await apiClient.post('/api/cash-transactions', { userId, amount: amt });
       setCashAmount('');
       fetchBalance();
     } catch (err) {
@@ -140,8 +140,8 @@ function Portfolio() {
   const confirmTrade = async () => {
     const { type, qty } = pendingTrade;
     try {
-      await axios.post(
-        `http://localhost:5000/api/stock-transactions/${type}`,
+      await apiClient.post(
+        `/api/stock-transactions/${type}`,
         { userId, stockId: selectedStock, quantity: qty }
       );
       fetchBalance();

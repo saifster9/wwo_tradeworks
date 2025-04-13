@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../api/axiosConfig';
 import '../styles/new_styles.css';
 import '../styles/ManageStocks.css';
     
@@ -18,7 +18,7 @@ import '../styles/ManageStocks.css';
     
         const fetchStocks = async () => {
             try {
-                const response = await axios.get('http://localhost:5000/api/stocks');
+                const response = await apiClient.get('/api/stocks');
                 setStocks(response.data);
             } catch (error) {
                 console.error('Error fetching stocks:', error);
@@ -29,7 +29,7 @@ import '../styles/ManageStocks.css';
         const handleCreateStock = async (e) => {
             e.preventDefault();
             try {
-                await axios.post('http://localhost:5000/api/stocks', newStock);
+                await apiClient.post('/api/stocks', newStock);
                 alert('Stock created successfully!');
                 setNewStock({
                     companyName: '',
@@ -54,7 +54,7 @@ import '../styles/ManageStocks.css';
     
         const handleUpdateStock = async (id, updatedStockData) => {
             try {
-                await axios.put(`http://localhost:5000/api/stocks/${id}`, updatedStockData);
+                await apiClient.put(`/api/stocks/${id}`, updatedStockData);
                 alert('Stock updated successfully!');
                 fetchStocks();
             } catch (error) {
@@ -65,7 +65,7 @@ import '../styles/ManageStocks.css';
     
         const handleDeleteStock = async (id) => {
             try {
-                await axios.delete(`http://localhost:5000/api/stocks/${id}`);
+                await apiClient.delete(`/api/stocks/${id}`);
                 alert('Stock deleted successfully!');
                 fetchStocks();
             } catch (error) {

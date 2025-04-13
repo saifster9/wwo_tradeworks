@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import axios from 'axios';
+import apiClient from '../api/axiosConfig'; 
 import '../styles/PriceTicker.css';
 
 export default function PriceTicker({ refreshInterval = 60000 }) {
@@ -10,7 +10,7 @@ export default function PriceTicker({ refreshInterval = 60000 }) {
     let isMounted = true;
     const fetchStocks = async () => {
       try {
-        const resp = await axios.get('http://localhost:5000/api/stocks');
+        const resp = await apiClient.get('process.env.REACT_APP_API_URL/api/stocks');
         if (isMounted) setStocks(resp.data);
       } catch (err) {
         console.error('Error fetching stocks for ticker:', err);

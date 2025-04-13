@@ -1,10 +1,21 @@
+# Git ignore file for a project with a backend and frontend
+# Node.js and React project structure
+# Ignore node_modules and package-lock.json files in both backend and frontend directories
 /backend/node_modules
-/frontend/node_modules
 /backend/package-lock.json
+/frontend/node_modules
 /frontend/package-lock.json
-/HTML-CSS
+
+# Environment variables
 /backend/.env
 /backend/.env.test
 /backend/.env.development
 /backend/.env.production
+/fontend/.env
+/frontend/.env.test
+/frontend/.env.development
+/frontend/.env.production
+
+# Miscellaneous files
+/HTML-CSS
 WWO_Tradeworks.code-workspace

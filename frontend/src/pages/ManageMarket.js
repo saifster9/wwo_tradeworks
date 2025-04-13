@@ -1,6 +1,6 @@
 // src/pages/ManageMarket.js
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../api/axiosConfig';
 import WeeklySchedule from '../components/WeeklySchedule';
 import ScheduleModal from '../components/ScheduleModal';
 import '../styles/ManageMarket.css';
@@ -18,7 +18,7 @@ export default function ManageMarket() {
 
   // Fetch schedule on mount
   useEffect(() => {
-    axios.get('http://localhost:5000/api/market/schedule')
+    apiClient.get('/api/market/schedule')
       .then(resp => setSchedule(resp.data))
       .catch(console.error);
   }, []);
@@ -30,7 +30,7 @@ export default function ManageMarket() {
 
   const fetchHolidays = async () => {
     try {
-      const resp = await axios.get('http://localhost:5000/api/market/holidays');
+      const resp = await apiClient.get('/api/market/holidays');
       setHolidays(resp.data);
     } catch (err) {
       console.error('Error fetching holidays:', err);
@@ -49,8 +49,8 @@ export default function ManageMarket() {
 
   const handleSave = async updated => {
     try {
-      await axios.put('http://localhost:5000/api/market/schedule', updated);
-      const resp = await axios.get('http://localhost:5000/api/market/schedule');
+      await apiClient.put('/api/market/schedule', updated);
+      const resp = await apiClient.get('/api/market/schedule');
       setSchedule(resp.data);
     } catch (err) {
       console.error('Error saving schedule:', err);
@@ -64,7 +64,7 @@ export default function ManageMarket() {
   const addHoliday = async e => {
     e.preventDefault();
     try {
-      await axios.post('http://localhost:5000/api/market/holidays', {
+      await apiClient.post('/api/market/holidays', {
         holiday_date: newHolidayDate,
         description: newHolidayDesc
       });
@@ -80,7 +80,7 @@ export default function ManageMarket() {
   const deleteHoliday = async date => {
     if (!window.confirm(`Delete holiday on ${date}?`)) return;
     try {
-      await axios.delete(`http://localhost:5000/api/market/holidays/${date}`);
+      await apiClient.delete(`/api/market/holidays/${date}`);
       fetchHolidays();
     } catch (err) {
       console.error('Error deleting holiday:', err);
@@ -91,7 +91,7 @@ export default function ManageMarket() {
   const clearHolidays = async () => {
     if (!window.confirm('Delete ALL holidays?')) return;
     try {
-      await axios.delete('http://localhost:5000/api/market/holidays');
+      await apiClient.delete('/api/market/holidays');
       fetchHolidays();
     } catch (err) {
       console.error('Error clearing holidays:', err);

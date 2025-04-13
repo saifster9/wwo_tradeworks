@@ -7,7 +7,7 @@ export default function useMarketStatus() {
   useEffect(() => {
     const fetchStatus = async () => {
       try {
-        const resp = await axios.get('http://localhost:5000/api/market/market-open');
+        const resp = await axios.get('process.env.REACT_APP_API_URL/api/market/market-open');
         setIsOpen(resp.data.open);      // ← must match the `open` field
       } catch (err) {
         console.error('Error fetching market status:', err);

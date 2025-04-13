@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
+import apiClient from '../api/axiosConfig'; 
 import { useNavigate } from 'react-router-dom';
 import useMarketStatus from '../hooks/useMarketStatus';
 import WeeklySchedule from '../components/WeeklySchedule';
@@ -14,7 +14,7 @@ function AdminDashboard() {
   useEffect(() => {
     const fetchStocks = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/stocks');
+        const response = await apiClient.get('/api/stocks');
         setStocks(response.data);
       } catch (error) {
         console.error('Error fetching stocks:', error);
@@ -23,7 +23,7 @@ function AdminDashboard() {
 
     const fetchMarketSchedule = async () => {
       try {
-        const response = await axios.get('http://localhost:5000/api/market/schedule');
+        const response = await apiClient.get('/api/market/schedule');
         setMarketSchedule(response.data);
       } catch (error) {
         console.error('Error fetching market schedule:', error);

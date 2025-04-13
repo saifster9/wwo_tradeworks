@@ -1,6 +1,6 @@
 // src/pages/UserDashboard.js
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import axios from 'axios';
+import apiClient from '../api/axiosConfig'; 
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import useMarketStatus from '../hooks/useMarketStatus';
@@ -33,7 +33,7 @@ function UserDashboard() {
   // Fetch cash balance
   const fetchBalance = useCallback(async () => {
     try {
-      const resp = await axios.get(`http://localhost:5000/api/user-balances/${userId}`);
+      const resp = await apiClient.get(`/api/user-balances/${userId}`);
       setCashBalance(parseFloat(resp.data.cash_balance));
     } catch (err) {
       console.error('Error fetching balance:', err);
@@ -43,7 +43,7 @@ function UserDashboard() {
   // Fetch holdings
   const fetchHoldings = useCallback(async () => {
     try {
-      const resp = await axios.get(`http://localhost:5000/api/user-holdings/${userId}`);
+      const resp = await apiClient.get(`/api/user-holdings/${userId}`);
       setHoldings(resp.data);
     } catch (err) {
       console.error('Error fetching holdings:', err);
@@ -53,7 +53,7 @@ function UserDashboard() {
   // Fetch recent stock transactions
   const fetchRecentStockTx = useCallback(async () => {
     try {
-      const resp = await axios.get(`http://localhost:5000/api/stock-transactions/history/${userId}`);
+      const resp = await apiClient.get(`/api/stock-transactions/history/${userId}`);
       setRecentTx(resp.data.slice(0, 5)); // take last 5
     } catch (err) {
       console.error('Error fetching recent transactions:', err);

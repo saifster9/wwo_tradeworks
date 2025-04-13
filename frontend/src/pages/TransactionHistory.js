@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useContext, useCallback } from 'react';
-import axios from 'axios';
+import apiClient from '../api/axiosConfig'; 
 import '../styles/new_styles.css';
 import '../styles/TransactionHistory.css';
 import { UserContext } from '../context/UserContext';
@@ -14,7 +14,7 @@ function TransactionHistory() {
   // Fetch cash history
   const fetchCash = useCallback(async () => {
     try {
-      const resp = await axios.get(`http://localhost:5000/api/cash-transactions/${userId}`);
+      const resp = await apiClient.get(`/api/cash-transactions/${userId}`);
       setCashTx(resp.data);
     } catch (err) {
       console.error('Error fetching cash history:', err);
@@ -24,7 +24,7 @@ function TransactionHistory() {
   // Fetch stock history
   const fetchStock = useCallback(async () => {
     try {
-      const resp = await axios.get(`http://localhost:5000/api/stock-transactions/history/${userId}`);
+      const resp = await apiClient.get(`/api/stock-transactions/history/${userId}`);
       setStockTx(resp.data);
     } catch (err) {
       console.error('Error fetching stock history:', err);

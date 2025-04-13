@@ -1,5 +1,5 @@
 import React, { useState, useContext } from 'react';
-import axios from 'axios';
+import apiClient from '../api/axiosConfig';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
 import '../styles/new_styles.css';
@@ -22,8 +22,8 @@ export default function Login() {
     setError('');
     setSuccess('');
     try {
-      const { data } = await axios.post(
-        'http://localhost:5000/api/users/login',
+      const { data } = await apiClient.post(
+        '/api/users/login',
         { username, password }
       );
 
@@ -51,12 +51,23 @@ export default function Login() {
       }, 1000);
 
     } catch (err) {
-      if (err.response?.status === 401) {
-        setError('Incorrect password. Please try again.');
-      } else if (err.response?.status === 403) {
-        setError('Unauthorized access.');
+      console.error('Login error response:', err.response || err);
+      if (err.response) {
+        const { status, data } = err.response;
+        if (status === 401) {
+          setError('Incorrect password. Please try again.');
+        } else if (status === 403) {
+          setError('Unauthorized access. Admin login is for administrators only.');
+        } else if (status === 404) {
+          setError('User not found. Please check your username.');
+        } else if (data && data.message) {
+          // Use server’s message if present
+          setError(data.message);
+        } else {
+          setError(`Login failed (${status}). Please try again.`);
+        }
       } else {
-        setError('An error occurred. Please try again later.');
+        setError('Network error. Please check your connection.');
       }
     } finally {
       setLoading(false);
