@@ -10,7 +10,7 @@ export default function PriceTicker({ refreshInterval = 60000 }) {
     let isMounted = true;
     const fetchStocks = async () => {
       try {
-        const resp = await apiClient.get('process.env.REACT_APP_API_URL/api/stocks');
+        const resp = await apiClient.get('/api/stocks');
         if (isMounted) setStocks(resp.data);
       } catch (err) {
         console.error('Error fetching stocks for ticker:', err);
