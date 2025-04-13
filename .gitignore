@@ -1,21 +1,38 @@
 # Git ignore file for a project with a backend and frontend
 # Node.js and React project structure
-# Ignore node_modules and package-lock.json files in both backend and frontend directories
+
+# Dependencies (node_modules ignored, package-lock.json committed)
 /backend/node_modules
-/backend/package-lock.json
 /frontend/node_modules
-/frontend/package-lock.json
 
 # Environment variables
-/backend/.env
-/backend/.env.test
-/backend/.env.development
-/backend/.env.production
-/fontend/.env
-/frontend/.env.test
-/frontend/.env.development
-/frontend/.env.production
+# Ignore all backend .env files
+/backend/.env*
 
-# Miscellaneous files
+# Ignore specific frontend .env files (especially local ones)
+# Keep .env.production if you want to commit it, otherwise add /frontend/.env.production
+/frontend/.env
+/frontend/.env.development
+/frontend/.env.test
+/frontend/.env.local
+/frontend/.env.development.local
+/frontend/.env.test.local
+/frontend/.env.production.local
+
+# Production build output
+/frontend/build
+
+# Testing
+/coverage
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE / Editor directories
+.vscode/
+.idea/
+
+# Miscellaneous project files
 /HTML-CSS
 WWO_Tradeworks.code-workspace
