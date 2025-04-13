@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import apiClient from '../api/axiosConfig'; 
+import apiClient from '../api/axiosConfig';
 import { useNavigate } from 'react-router-dom';
 import useMarketStatus from '../hooks/useMarketStatus';
 import WeeklySchedule from '../components/WeeklySchedule';
