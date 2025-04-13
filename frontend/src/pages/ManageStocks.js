@@ -52,17 +52,6 @@ import '../styles/ManageStocks.css';
             }));
         };
     
-        const handleUpdateStock = async (id, updatedStockData) => {
-            try {
-                await apiClient.put(`/api/stocks/${id}`, updatedStockData);
-                alert('Stock updated successfully!');
-                fetchStocks();
-            } catch (error) {
-                console.error('Error updating stock:', error);
-                alert('Error updating stock.');
-            }
-        };
-    
         const handleDeleteStock = async (id) => {
             try {
                 await apiClient.delete(`/api/stocks/${id}`);
