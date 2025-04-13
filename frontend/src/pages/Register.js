@@ -20,12 +20,27 @@ function Register() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    // ... (keep existing code like setFormData, etc.)
     try {
-      await apiClient.post('/api/users/register', formData);
+      // Use apiClient assuming you set it up
+      await apiClient.post('/api/users/register', formData); // Use relative path with apiClient
       alert('Registration successful!');
       navigate('/login');
     } catch (error) {
-      alert('Error registering user');
+      console.error("Registration Error:", error.response || error); // Log the full error for debugging
+      let errorMessage = 'Error registering user. Please try again.';
+      if (error.response && error.response.data && error.response.data.message) {
+         // Use the specific message from the backend if available
+         errorMessage = error.response.data.message;
+         if (error.response.data.error && typeof error.response.data.error === 'string' && error.response.data.error.includes('Duplicate entry')) {
+           // Provide a more user-friendly message for unique constraint errors
+           errorMessage = 'Username, email, or phone number may already be taken. Please try different values.';
+         }
+      } else if (error.response && error.response.status) {
+         errorMessage = `Error registering user (Status: ${error.response.status}).`;
+      }
+      // Replace the generic alert with one that shows more detail
+      alert(errorMessage);
     }
   };
 
