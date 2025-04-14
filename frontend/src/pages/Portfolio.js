@@ -162,6 +162,8 @@ function Portfolio() {
     label: `${s.stockTicker} - ${s.companyName} (Avail: ${s.totalSharesAvailable})`
   }));
 
+  const stockDetails = stocks.find(s => s.id === selectedStock);
+
   return (
     <div className="dashboard-container">
       
@@ -247,6 +249,19 @@ function Portfolio() {
                 control: prov => ({ ...prov, borderRadius: 'var(--border-radius)' })
               }}
             />
+
+
+            {stockDetails && (
+                    <div className="stock-details-info" style={{ width: '100%', marginTop: '10px', textAlign: 'left' }}>
+                      <p style={{ margin: '2px 0' }}>
+                        Price/Share: <strong>${parseFloat(stockDetails.initialSharePrice).toFixed(2)}</strong>
+                      </p>
+                      <p style={{ margin: '2px 0' }}>
+                        Shares Available: <strong>{stockDetails.totalSharesAvailable}</strong>
+                      </p>
+                    </div>
+                  )}
+
             <input
               type="number"
               min="1"

@@ -2,11 +2,8 @@
 const { Stock } = require('../models');
 
 exports.createStock = async (req, res) => {
-  console.log('createStock called with:', req.body);
   try {
     const { companyName, stockTicker, totalSharesAvailable, initialSharePrice } = req.body;
-    console.log('Data to create:', { companyName, stockTicker, totalSharesAvailable, initialSharePrice });
-
     const newStock = await Stock.create({
       companyName,
       stockTicker,
@@ -14,7 +11,6 @@ exports.createStock = async (req, res) => {
       initialSharePrice
     });
 
-    console.log('Stock created:', newStock);
     res.status(201).json({ message: 'Stock created successfully', stock: newStock });
   } catch (error) {
     console.error('Error in createStock:', error);

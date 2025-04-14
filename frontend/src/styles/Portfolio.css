@@ -6,3 +6,12 @@
     border-radius: 8px;         /* round the corners */
     overflow: hidden;           /* clip inner cell borders */
     }
+
+.stock-details-info {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px 15px;
+    background-color: var(--card-background-color);
+    border-bottom: 1px solid var(--border-color);
+}

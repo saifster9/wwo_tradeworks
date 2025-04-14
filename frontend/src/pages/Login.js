@@ -6,9 +6,8 @@ import '../styles/new_styles.css';
 import '../styles/Login.css';
 
 export default function Login() {
-  const [username, setUsername]     = useState(localStorage.getItem('rememberUser') || '');
+  const [username, setUsername]     = useState('');
   const [password, setPassword]     = useState('');
-  const [rememberMe, setRememberMe] = useState(false);
   const [error, setError]           = useState('');
   const [loading, setLoading]       = useState(false);
   const [success, setSuccess]       = useState('');
@@ -26,13 +25,6 @@ export default function Login() {
         '/api/users/login',
         { username, password }
       );
-
-      // Remember me
-      if (rememberMe) {
-        localStorage.setItem('rememberUser', username);
-      } else {
-        localStorage.removeItem('rememberUser');
-      }
 
       // Persist user info
       localStorage.setItem('userId', data.userId);
@@ -99,17 +91,6 @@ export default function Login() {
           onChange={e => setPassword(e.target.value)}
           required
         />
-
-        {/* Remember Me */}
-        <div className="remember-me">
-          <input
-            id="rememberMe"
-            type="checkbox"
-            checked={rememberMe}
-            onChange={e => setRememberMe(e.target.checked)}
-          />
-          <label htmlFor="rememberMe">Remember Me</label>
-        </div>
 
         {/* Submit */}
         <button type="submit" disabled={loading}>
