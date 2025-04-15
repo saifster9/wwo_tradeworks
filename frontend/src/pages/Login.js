@@ -4,8 +4,9 @@ import apiClient from '../api/axiosConfig';
 // Import Link component for navigation links
 import { useNavigate, Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
+import fullLogo from '../assets/logo-full.png';
 import '../styles/new_styles.css';
-import '../styles/Login.css'; // Ensure this contains necessary styles
+import '../styles/Login.css';
 
 export default function Login() {
   const [username, setUsername]     = useState('');
@@ -71,8 +72,7 @@ export default function Login() {
   return (
     // Using login-container and potentially dashboard-container for consistency
     <div className="login-container">
-      {/* Optional: Add Logo here if desired, similar to Home page */}
-      {/* <img src={fullLogo} alt="WWO Tradeworks Logo" style={{ maxWidth: '250px', marginBottom: '20px', display: 'block', margin: 'auto' }} /> */}
+      <img src={fullLogo} alt="WWO Tradeworks Logo" />
 
       <h2>Login</h2>
 
