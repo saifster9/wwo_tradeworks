@@ -66,3 +66,29 @@
   .login-container button {
     width: 100%;
   }
+
+  .register {
+    margin-top: 20px;
+    font-size: 0.9em;
+    color: var(--text-color);
+  }
+  .register link {
+    text-decoration: none;
+    color: var(--secondary-color);
+    font-weight: bold;
+  }
+
+  .forgot-password-row a,
+  .register-row a {
+    color: var(--secondary-color); /* Use the secondary color variable */
+    text-decoration: none; /* Optional: remove the default underline */
+    transition: color 0.2s ease; /* Optional: smooth transition for hover */
+    font-weight: bold;
+  }
+
+  .forgot-password-row a:hover,
+.register-row a:hover {
+  color: var(--primary-color); /* Optional: Change to primary color on hover */
+  text-decoration: underline; /* Optional: Add underline back on hover */
+  font-weight: bold;
+}

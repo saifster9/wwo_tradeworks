@@ -100,11 +100,9 @@ export default function Login() {
           required
         />
 
-        {/* --- REMOVED Remember Me Checkbox --- */}
 
-        {/* Forgot Password Link (Now in its own div for layout) */}
-        <div style={{ textAlign: 'right', marginTop: '10px', marginBottom: '20px', fontSize: '0.9em' }}>
-          <Link to="/forgot-password" style={{ textDecoration: 'none' }}>Forgot Password?</Link>
+        <div className="forgot-password-row">
+          <Link to="/forgot-password">Forgot Password?</Link>
           {/* Note: The /forgot-password route and functionality need to be implemented separately */}
         </div>
 
@@ -127,7 +125,7 @@ export default function Login() {
       </form>
 
       {/* Link to Register Page */}
-      <p style={{ textAlign: 'center', marginTop: '20px' }}>
+      <p className="register-row">
         Don't have an account? <Link to="/register">Register here</Link>
       </p>
 
