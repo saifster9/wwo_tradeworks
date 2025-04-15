@@ -1,3 +1,4 @@
+// wwo_tradeworks-main/backend/models/cash_transaction.model.js
 module.exports = (sequelize, DataTypes) => {
   const CashTransaction = sequelize.define('CashTransaction', {
     id: {
@@ -8,7 +9,7 @@ module.exports = (sequelize, DataTypes) => {
     userId: {
       type: DataTypes.INTEGER,
       allowNull: false
-      // we'll set up the association in the `associate` method below
+      // Foreign key constraint is implicitly added by belongsTo
     },
     amount: {
       type: DataTypes.DECIMAL(10, 2),
@@ -29,14 +30,10 @@ module.exports = (sequelize, DataTypes) => {
 
   // Define associations in a static associate method
   CashTransaction.associate = models => {
-    // models.User will be available after all models are initialized
+    // CashTransaction belongs to one User
     CashTransaction.belongsTo(models.User, {
       foreignKey: 'userId',
-      as: 'user'
-    });
-    models.User.hasMany(CashTransaction, {
-      foreignKey: 'userId',
-      as: 'cashTransactions'
+      as: 'user' // Alias for accessing the User from a CashTransaction instance
     });
   };
 

@@ -1,3 +1,4 @@
+// wwo_tradeworks-main/backend/models/stock_transaction.model.js
 module.exports = (sequelize, DataTypes) => {
   const StockTransaction = sequelize.define('StockTransaction', {
     id: {
@@ -34,24 +35,18 @@ module.exports = (sequelize, DataTypes) => {
     updatedAt: false
   });
 
-  // Define associations in a static method
+  // Define associations in a static associate method
   StockTransaction.associate = models => {
-    const { User, Stock } = models;
-    StockTransaction.belongsTo(User, {
+    // A StockTransaction belongs to one User
+    StockTransaction.belongsTo(models.User, {
       foreignKey: 'userId',
-      as: 'user'
+      as: 'user' // Alias for accessing the User from StockTransaction
     });
-    StockTransaction.belongsTo(Stock, {
+
+    // A StockTransaction belongs to one Stock
+    StockTransaction.belongsTo(models.Stock, {
       foreignKey: 'stockId',
-      as: 'Stock'
-    });
-    User.hasMany(StockTransaction, {
-      foreignKey: 'userId',
-      as: 'stockTransactions'
-    });
-    Stock.hasMany(StockTransaction, {
-      foreignKey: 'stockId',
-      as: 'transactions'
+      as: 'Stock' // Alias for accessing the Stock from StockTransaction (Note: 'Stock' might conflict with model name, consider 'stock'?)
     });
   };
 

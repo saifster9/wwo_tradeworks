@@ -1,15 +1,16 @@
+// wwo_tradeworks-main/backend/models/user.model.js
 module.exports = (sequelize, DataTypes) => {
   // Helper function to clean phone number (keep only digits)
   const cleanPhoneNumber = (phone) => {
     if (!phone || typeof phone !== 'string') {
       return null; // Return null if input is invalid/empty
     }
-    // Keep only digits, return null if result is empty after cleaning
     const cleaned = phone.replace(/[^\d]/g, '');
     return cleaned.length > 0 ? cleaned : null;
   };
 
   const User = sequelize.define('User', {
+    // ... (id, username, password, firstName, lastName, email fields) ...
     id: {
       type: DataTypes.INTEGER,
       primaryKey: true,
@@ -19,7 +20,6 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false
-      // Add validation if needed, e.g., min/max length
     },
     password: {
       type: DataTypes.STRING,
@@ -37,26 +37,19 @@ module.exports = (sequelize, DataTypes) => {
       type: DataTypes.STRING,
       unique: true,
       allowNull: false,
-      validate: { // Example basic email validation
+      validate: {
         isEmail: true,
       }
     },
     phoneNumber: {
-      type: DataTypes.STRING, // Store cleaned digits as a string
+      type: DataTypes.STRING,
       unique: true,
       allowNull: false,
-      // --- NEW: Setter for phoneNumber ---
       set(value) {
-        // Automatically clean the phone number whenever this field is set
-        // on a User instance (e.g., during User.create or user.update)
-        // This ensures only digits (or null) are stored in the database.
         this.setDataValue('phoneNumber', cleanPhoneNumber(value));
       },
-      // --- END: Setter ---
       validate: {
-         // Optional: Add validation to ensure it's exactly 10 digits after cleaning
          isTenDigits(value) {
-            // The value passed here *should* already be cleaned by the setter
             if (value && value.length !== 10) {
                  throw new Error('Phone number must contain exactly 10 digits.');
             }
@@ -69,31 +62,45 @@ module.exports = (sequelize, DataTypes) => {
     }
   }, {
     tableName: 'users',
-    timestamps: true // or false if you prefer no timestamps
+    timestamps: true
   });
 
-  // Associations will be added in other models' associate methods
-  // UserBalance association (ensure this exists if UserBalance model defines it too)
-   User.hasOne(sequelize.models.UserBalance, { // Access UserBalance via sequelize.models if needed here
+  // --- CORRECTED: Define associations in a static associate method ---
+  User.associate = (models) => {
+    // models object contains all loaded models (User, UserBalance, etc.)
+    // Define associations here using the 'models' argument
+
+    // User has one UserBalance
+    User.hasOne(models.UserBalance, {
       foreignKey: 'userId',
       as: 'balance'
-   });
-   // CashTransaction association
-   User.hasMany(sequelize.models.CashTransaction, {
-       foreignKey: 'userId',
-       as: 'cashTransactions'
-   });
-   // StockTransaction association
-    User.hasMany(sequelize.models.StockTransaction, {
-       foreignKey: 'userId',
-       as: 'stockTransactions'
-   });
-    // UserHolding association
-    User.hasMany(sequelize.models.UserHolding, {
-       foreignKey: 'userId',
-       as: 'holdings'
-   });
+      // onDelete: 'CASCADE' // Optional: Add if you want balance deleted when user is deleted
+    });
 
+    // User has many CashTransactions
+    User.hasMany(models.CashTransaction, {
+      foreignKey: 'userId',
+      as: 'cashTransactions'
+      // onDelete: 'CASCADE' // Optional: Add if you want transactions deleted when user is deleted
+    });
+
+    // User has many StockTransactions
+    User.hasMany(models.StockTransaction, {
+      foreignKey: 'userId',
+      as: 'stockTransactions'
+      // onDelete: 'CASCADE' // Optional
+    });
+
+    // User has many UserHoldings
+    User.hasMany(models.UserHolding, {
+      foreignKey: 'userId',
+      as: 'holdings'
+      // onDelete: 'CASCADE' // Optional
+    });
+
+    // Add other associations like belongsToMany if needed
+  };
+  // --- END Association Definition ---
 
   return User;
 };

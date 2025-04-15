@@ -1,27 +1,64 @@
 // src/pages/ForgotPassword.js
 import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
-import apiClient from '../api/axiosConfig';
-import '../styles/new_styles.css';
-import '../styles/Login.css';
+import { Link } from 'react-router-dom'; // For linking back to login
+import apiClient from '../api/axiosConfig'; // Your configured API client
+import '../styles/new_styles.css'; // Or specific styles
+import '../styles/Login.css'; // Can reuse login styles
+
+// --- Helper function to format phone number ---
+const formatPhoneNumber = (value) => {
+  if (!value) return value; // Return empty if no value
+  const phoneNumber = value.replace(/[^\d]/g, ''); // Remove non-digits
+  const phoneNumberLength = phoneNumber.length;
+  if (phoneNumberLength < 4) return phoneNumber;
+  if (phoneNumberLength < 7) {
+    return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3)}`;
+  }
+  return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
+};
+// --- END: Helper function ---
 
 function ForgotPassword() {
   // State for different steps: 'enterDetails', 'resetPassword', 'done'
   const [step, setStep] = useState('enterDetails');
 
   // Input states
-  const [identifier, setIdentifier] = useState(''); // Can be email or username
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [identifier, setIdentifier] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState(''); // Stores CLEANED digits only
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  // State for formatted phone number display
+  const [formattedPhoneNumber, setFormattedPhoneNumber] = useState('');
 
   // Feedback states
   const [message, setMessage] = useState('');
-  const [isError, setIsError] = useState(false);
+  const [isError, setIsError] = useState(false); // Flag to know if 'message' is an error
   const [isLoading, setIsLoading] = useState(false);
 
   // Store userId after successful verification
   const [verifiedUserId, setVerifiedUserId] = useState(null);
+
+  // --- CORRECTED: Specific handler for Phone Number input ---
+  const handlePhoneChange = (e) => {
+     // Clear previous message when user types in phone field
+     if (message) {
+        setMessage('');
+        setIsError(false); // Reset error flag as well
+     }
+     // --- End Correction ---
+
+     const rawValue = e.target.value;
+     // Clean the input (keep only digits)
+     const cleanedValue = rawValue.replace(/[^\d]/g, '');
+     // Limit to 10 digits
+     const limitedValue = cleanedValue.slice(0, 10);
+
+     // Update the actual state value sent to backend (digits only)
+     setPhoneNumber(limitedValue); // Update the state used for submission/comparison
+     // Update the formatted value for display in the input field
+     setFormattedPhoneNumber(formatPhoneNumber(limitedValue));
+  };
+  // --- END: Specific handler ---
 
   // Handler for Step 1 & 2: Verify Identifier and Phone Number
   const handleVerifyIdentity = async (e) => {
@@ -30,17 +67,24 @@ function ForgotPassword() {
     setMessage('');
     setIsError(false);
 
+    // Validate phone number length
+     if (phoneNumber.length !== 10) {
+        setMessage('Please enter a valid 10-digit phone number.');
+        setIsError(true);
+        setIsLoading(false); // Stop loading
+        return;
+    }
+
     try {
-      // NEW Backend Endpoint: Send identifier (email/username) AND phone number
+      // Send identifier (email/username) AND CLEANED phone number
       const response = await apiClient.post('/api/users/verify-identity', {
-        identifier, // Send email or username
-        phoneNumber
+        identifier,
+        phoneNumber // This state now holds only digits
       });
 
-      // If successful, backend confirms match and might return userId
-      setVerifiedUserId(response.data.userId); // Assuming backend returns userId on success
-      setStep('resetPassword'); // Move to the next step
-      setMessage(''); // Clear any previous messages
+      setVerifiedUserId(response.data.userId);
+      setStep('resetPassword');
+      setMessage('');
 
     } catch (error) {
       console.error("Identity Verification Error:", error.response || error);
@@ -51,36 +95,33 @@ function ForgotPassword() {
     }
   };
 
-  // Handler for Step 3: Reset Password
+  // Handler for Step 3: Reset Password (remains the same)
   const handleResetPassword = async (e) => {
     e.preventDefault();
-    // Basic validation
+    // Clear message on new attempt
+    setMessage('');
+    setIsError(false);
+
     if (newPassword !== confirmPassword) {
       setMessage('New passwords do not match.');
       setIsError(true);
       return;
     }
-    if (newPassword.length < 6) { // Example minimum length
+     if (newPassword.length < 6) {
         setMessage('Password must be at least 6 characters long.');
         setIsError(true);
         return;
     }
-
     setIsLoading(true);
-    setMessage('');
-    setIsError(false);
 
     try {
-      // NEW Backend Endpoint: Send verified userId and new password
       await apiClient.post('/api/users/reset-password-direct', {
-        userId: verifiedUserId, // Send the userId confirmed in the previous step
+        userId: verifiedUserId,
         newPassword: newPassword
       });
-
       setMessage('Password has been reset successfully!');
       setIsError(false);
-      setStep('done'); // Move to a final confirmation step
-
+      setStep('done');
     } catch (error) {
       console.error("Password Reset Error:", error.response || error);
       setMessage(error.response?.data?.message || 'Failed to reset password. Please try again later.');
@@ -102,23 +143,26 @@ function ForgotPassword() {
             <label htmlFor="identifier">Email or Username</label>
             <input
               id="identifier"
-              type="text" // Allow email or username
+              type="text"
               placeholder="Enter your email or username"
               value={identifier}
-              onChange={(e) => setIdentifier(e.target.value)}
+              onChange={(e) => { setMessage(''); setIsError(false); setIdentifier(e.target.value);}} // Clear message on change
               required
               disabled={isLoading}
             />
+            {/* --- UPDATED Phone Input --- */}
             <label htmlFor="phoneNumber" style={{marginTop: '10px'}}>Phone Number</label>
             <input
               id="phoneNumber"
-              type="tel" // Use 'tel' type for phone numbers
-              placeholder="Enter registered phone number"
-              value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              name="phoneNumber" // Keep name if needed, but onChange is specific
+              type="tel"
+              placeholder="123-456-7890"
+              value={formattedPhoneNumber} // Bind to formatted state
+              onChange={handlePhoneChange} // Use specific handler
               required
               disabled={isLoading}
             />
+            {/* --- END: UPDATED Phone Input --- */}
             <button type="submit" disabled={isLoading} style={{ width: '100%', marginTop: '20px' }}>
               {isLoading ? 'Verifying...' : 'Verify Identity'}
             </button>
@@ -126,36 +170,21 @@ function ForgotPassword() {
         );
 
       case 'resetPassword':
-        return (
+         return (
           <form onSubmit={handleResetPassword} style={{ maxWidth: '350px', margin: '0 auto' }}>
              <p style={{ marginBottom: '20px', textAlign: 'center' }}>
               Identity verified. Please enter your new password below.
             </p>
             <label htmlFor="newPassword">New Password</label>
-            <input
-              id="newPassword"
-              type="password"
-              placeholder="Enter new password"
-              value={newPassword}
-              onChange={(e) => setNewPassword(e.target.value)}
-              required
-              disabled={isLoading}
-            />
+            <input id="newPassword" type="password" placeholder="Enter new password" value={newPassword} onChange={(e) => { setMessage(''); setIsError(false); setNewPassword(e.target.value);}} required disabled={isLoading}/>
             <label htmlFor="confirmPassword" style={{marginTop: '10px'}}>Confirm New Password</label>
-            <input
-              id="confirmPassword"
-              type="password"
-              placeholder="Confirm new password"
-              value={confirmPassword}
-              onChange={(e) => setConfirmPassword(e.target.value)}
-              required
-              disabled={isLoading}
-            />
+            <input id="confirmPassword" type="password" placeholder="Confirm new password" value={confirmPassword} onChange={(e) => { setMessage(''); setIsError(false); setConfirmPassword(e.target.value);}} required disabled={isLoading}/>
             <button type="submit" disabled={isLoading} style={{ width: '100%', marginTop: '20px' }}>
               {isLoading ? 'Resetting...' : 'Reset Password'}
             </button>
           </form>
         );
+
 
         case 'done':
             return (
@@ -170,31 +199,26 @@ function ForgotPassword() {
             );
 
       default:
-        return null; // Should not happen
+        return null;
     }
   };
 
   return (
     <div className="login-container">
       <h2>Forgot Password</h2>
-
-      {/* Render the current step's form */}
       {renderStep()}
-
-      {/* Display messages if not in the 'done' step */}
+      {/* Display Message Area - shows 'message' state */}
       {step !== 'done' && message && (
           <p style={{
-             color: isError ? 'red' : 'green',
+             color: isError ? 'red' : 'green', // Use isError flag to style
              marginTop: '15px',
              textAlign: 'center',
-             maxWidth: '350px', // Match form width
+             maxWidth: '350px',
              margin: '15px auto 0 auto'
            }}>
             {message}
           </p>
         )}
-
-      {/* Link back to Login (only show if not finished) */}
       {step === 'enterDetails' && (
          <p style={{ textAlign: 'center', marginTop: '20px' }}>
             Remember your password? <Link to="/login">Login here</Link>
