@@ -1,17 +1,15 @@
 // src/pages/Login.js
 import React, { useState, useContext } from 'react';
 import apiClient from '../api/axiosConfig';
+// Import Link component for navigation links
 import { useNavigate, Link } from 'react-router-dom';
 import { UserContext } from '../context/UserContext';
-import fullLogo from '../assets/logo-full.png';
 import '../styles/new_styles.css';
-import '../styles/Login.css';
+import '../styles/Login.css'; // Ensure this contains necessary styles
 
 export default function Login() {
-  const [username, setUsername]     = useState(localStorage.getItem('rememberUser') || '');
+  const [username, setUsername]     = useState('');
   const [password, setPassword]     = useState('');
-  // State for "Remember Me" checkbox - already existed
-  const [rememberMe, setRememberMe] = useState(!!localStorage.getItem('rememberUser')); // Initialize based on localStorage
   const [error, setError]           = useState('');
   const [loading, setLoading]       = useState(false);
   const [success, setSuccess]       = useState('');
@@ -29,13 +27,6 @@ export default function Login() {
         '/api/users/login', // Use relative path
         { username, password }
       );
-
-      // Remember me logic - already existed
-      if (rememberMe) {
-        localStorage.setItem('rememberUser', username);
-      } else {
-        localStorage.removeItem('rememberUser');
-      }
 
       // Persist user info - already existed
       localStorage.setItem('userId', data.userId);
@@ -78,12 +69,14 @@ export default function Login() {
   };
 
   return (
+    // Using login-container and potentially dashboard-container for consistency
     <div className="login-container">
-
-      <img src={fullLogo} alt="WWO Tradeworks Logo" style={{ maxWidth: '250px', marginBottom: '20px', display: 'block', margin: 'auto' }} />
+      {/* Optional: Add Logo here if desired, similar to Home page */}
+      {/* <img src={fullLogo} alt="WWO Tradeworks Logo" style={{ maxWidth: '250px', marginBottom: '20px', display: 'block', margin: 'auto' }} /> */}
 
       <h2>Login</h2>
 
+      {/* Consider constraining form width */}
       <form onSubmit={handleSubmit} style={{ maxWidth: '350px', margin: '0 auto' }}>
         {/* Username Input */}
         <label htmlFor="username">Username</label>
@@ -107,32 +100,33 @@ export default function Login() {
           required
         />
 
-        {/* Forgot Password Row */}
-        <div className="forgot-password-row">
+        {/* --- REMOVED Remember Me Checkbox --- */}
 
-          {/* Forgot Password Link (Placeholder) */}
-          <div>
-            <Link to="/forgot-password">Forgot Password?</Link>
-            {/* Note: The /forgot-password route and functionality need to be implemented separately */}
-          </div>
+        {/* Forgot Password Link (Now in its own div for layout) */}
+        <div style={{ textAlign: 'right', marginTop: '10px', marginBottom: '20px', fontSize: '0.9em' }}>
+          <Link to="/forgot-password" style={{ textDecoration: 'none' }}>Forgot Password?</Link>
+          {/* Note: The /forgot-password route and functionality need to be implemented separately */}
         </div>
+
 
         {/* Submit Button */}
         {/* Make button full width within the constrained form */}
-        <button type="submit" disabled={loading}>
+        <button type="submit" disabled={loading} style={{ width: '100%' }}>
           {loading ? <span className="spinner" /> : 'Login'}
         </button>
 
          {/* Error Message Display Area */}
          {error && (
-            <p className="error-message">{error}</p>
+            <p className="error-message" style={{ color: 'red', marginTop: '15px', textAlign: 'center' }}>
+                {error}
+            </p>
          )}
+         {/* Display success message if needed, though redirect usually handles this */}
+         {success && <p className="success-message" style={{ color: 'green', marginTop: '15px', textAlign: 'center' }}>{success}</p>}
 
-         {/* Success Message Display Area */}
-         {success && <p className="success-message">{success}</p>}
       </form>
 
-      {/* --- NEW: Link to Register Page --- */}
+      {/* Link to Register Page */}
       <p style={{ textAlign: 'center', marginTop: '20px' }}>
         Don't have an account? <Link to="/register">Register here</Link>
       </p>
