@@ -3,6 +3,7 @@ import React from 'react';
 import Navbar from './components/Navbar.js';
 import Home from './pages/Home.js';
 import Login from './pages/Login.js';
+import ForgotPassword from './pages/ForgotPassword.js';
 import Register from './pages/Register.js';
 import UserDashboard from './pages/UserDashboard.js';
 import AdminDashboard from './pages/AdminDashboard.js';
@@ -24,6 +25,7 @@ function App() {
                         <Route path="/" element={<Home />} />
                         <Route path="/login" element={<Login />} />
                         <Route path="/register" element={<Register />} />
+                        <Route path="/forgot-password" element={<ForgotPassword />} />
                         {/* Admin only */}
                         <Route
                             path="/admin-dashboard"

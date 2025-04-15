@@ -61,7 +61,9 @@ nav a:hover {
 
 /* Button Styles */
 button {
-    width: 100%;
+    min-width: 150px;
+    max-width: 500px; 
+    margin: auto;
     background: var(--primary-color);
     color: white;
     border: none;
@@ -128,13 +130,6 @@ input:focus {
   .flex-form button {
     white-space: nowrap;
   }
-
-.home-container p {
-    font-size: 18px;
-    margin-top: 20px;
-    color: var(--text-color);
-    text-align: center;
-}
 
 /* Dashboard Sections */
 .dashboard-container {

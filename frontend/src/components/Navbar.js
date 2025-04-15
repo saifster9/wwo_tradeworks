@@ -1,4 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import textLogo from '../assets/logo-text.png';
 import '../styles/new_styles.css';
 import React from 'react';
 
@@ -15,7 +16,9 @@ function Navbar() {
 
     return (
         <nav>
-
+            <Link to="/" style={{ marginRight: 'auto' }}> {/* Push other links right */}
+               <img src={textLogo} alt="WWO Tradeworks" style={{ height: '30px', verticalAlign: 'middle' }} /> {/* Adjust height/styling */}
+            </Link>
             
             {/* Conditionally render links based on the route */}  
             {location.pathname === '/user-dashboard' || location.pathname === '/portfolio' || location.pathname === '/transaction-history' ? (

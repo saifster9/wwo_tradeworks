@@ -10,28 +10,30 @@
     --border-radius: 10px;
 }
 
-.home-container p {
-    font-size: 18px;
-    margin-top: 20px;
-    color: var(--text-color);
+.registration-container {
+    background: var(--light-color);
+    padding: 40px;
+    border-radius: var(--border-radius);
+    box-shadow: var(--shadow);
     text-align: center;
+    width: 360px;
+    margin-top: 80px;
 }
 
-.home-container img {
+.registration-container img {
     width: 100%;
     max-width: 300px;
     margin: 0 auto;
     padding-bottom: 2em;
 }
 
-hr.section-divider {
-    border: none;
-    border-top: 1px solid var(--accent-color);
-    margin: 25px auto;
-    width: 80%;
-  }
+.registration-container h2 {
+    color: var(--primary-color);
+    margin-bottom: 15px;
+    font-size: 26px;
+}
 
-.tag-line {
-    font-size: 1.1em;
-    margin-bottom: 50px;
+.registration-container form {
+    max-width: 350px; 
+    margin: 0 auto;
 }

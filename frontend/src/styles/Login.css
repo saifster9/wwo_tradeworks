@@ -20,8 +20,49 @@
     margin-top: 80px;
 }
 
+.login-container img {
+    width: 100%;
+    max-width: 300px;
+    margin: 0 auto;
+    padding-bottom: 2em;
+}
+
 .login-container h2 {
     color: var(--primary-color);
     margin-bottom: 15px;
     font-size: 26px;
 }
+
+.login-container form {
+    max-width: 350px; 
+    margin: 0 auto;
+}
+
+.success-message {
+    color: 'green';
+    marginTop: '15px';
+    textAlign: 'center';
+}
+
+.error-message {
+    color: 'red';
+    marginTop: '15px';
+    textAlign: 'center';
+}
+
+.forgot-password-row {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 10px;
+    margin-bottom: 20px;
+    font-size: 0.9em;
+  }
+
+  .forgot-password-row link {
+    text-decoration: none;
+  }
+
+  .login-container button {
+    width: 100%;
+  }
