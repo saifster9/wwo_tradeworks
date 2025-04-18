@@ -159,7 +159,7 @@ function Portfolio() {
 
   const stockOptions = stocks.map(s => ({
     value: s.id,
-    label: `${s.stockTicker} - ${s.companyName} (Avail: ${s.totalSharesAvailable})`
+    label: `${s.stockTicker} - ${s.companyName} (Price: ${s.initialSharePrice})`
   }));
 
   const stockDetails = stocks.find(s => s.id === selectedStock);
