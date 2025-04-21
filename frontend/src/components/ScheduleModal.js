@@ -22,12 +22,13 @@ export default function ScheduleModal({ initial, onCancel, onSave }) {
       <form className="modal" onSubmit={handleSubmit}>
         <h3>Edit {['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][initial.dayOfWeek]}</h3>
         <label>
+        Trading Day: 
           <input
             type="checkbox"
             checked={isTradingDay}
             onChange={e => setIsTradingDay(e.target.checked)}
           />
-          Trading Day
+          
         </label>
 
         <label>

@@ -79,3 +79,9 @@
   border-radius: 4px;
   cursor: pointer;
 }
+
+.modal-backdrop form label {
+  display: flex;
+  flex-direction: row;
+  font-size: 0.9rem;
+}
