@@ -75,6 +75,7 @@ function AdminDashboard() {
           </div>
         </div>
 
+        <div>
         <div className="card">
           {/* Market Status */}
           <div className="dashboard-style">
@@ -126,6 +127,7 @@ function AdminDashboard() {
               Manage Market
             </button>
           </div>
+        </div>
         </div>
       </div>
     </div>
