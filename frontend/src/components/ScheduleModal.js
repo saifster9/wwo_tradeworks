@@ -1,4 +1,3 @@
-// src/components/ScheduleModal.js
 import React, { useState } from 'react';
 import '../styles/ScheduleModal.css';
 

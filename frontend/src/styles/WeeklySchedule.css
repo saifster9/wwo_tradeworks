@@ -1,47 +1,111 @@
+/* frontend/src/styles/WeeklySchedule.css */
+
 .weekly-calendar {
-    display: grid;
-    grid-template-columns: 60px repeat(7, 1fr);
-    border: 1px solid #ccc;
-    margin-top: 16px;
-  }
-  
-  .time-column {
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .time-slot {
-    flex: 1;
-    border-bottom: 1px solid #eee;
-    font-size: 12px;
-    padding-left: 4px;
-  }
-  
-  .day-column {
-    border-left: 1px solid #eee;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-  }
-  
-  .day-header {
-    text-align: center;
-    font-weight: bold;
-    padding: 4px 0;
+  display: grid;
+  /* Columns: 1 for time (60px), 7 for days (1fr each) */
+  grid-template-columns: 60px repeat(7, 1fr);
+  /* Rows: Header (30px), Separator (10px), Content (auto) */
+  grid-template-rows: 30px 10px auto; /* Adjust heights as needed */
+  border: 1px solid #ccc;
+  margin-top: 16px;
+  background-color: #fff;
+}
+
+/* Style the top-left cell (Above time, beside headers - Row 1, Col 1) */
+.calendar-top-left {
+  grid-column: 1 / 2;
+  grid-row: 1 / 2; /* <-- Row 1 */
+  border-bottom: 1px solid #ddd;
+  border-right: 1px solid #eee;
+  background: #f7f7f7;
+  align-self: stretch;
+}
+
+/* Style the day headers (Row 1, Cols 2-8) */
+.day-header {
+  grid-row: 1 / 2; /* <-- Row 1 */
+  /* grid-column is set inline in the component */
+  text-align: center;
+  font-weight: bold;
+  padding: 4px 0;
+  border-bottom: 1px solid #ddd;
+  border-left: 1px solid #eee;
+  background: #f7f7f7;
+  display: flex; /* Use flex to center content vertically */
+  align-items: center;
+  justify-content: center;
+}
+.day-header:first-of-type {
+   border-left: none;
+}
+
+/* --- NEW: Style for the empty separator cells (Row 2) --- */
+.calendar-separator-cell {
+    grid-row: 2 / 3; /* Place in the second row */
+    /* grid-column set inline in component */
+    /* Add minimum height and maybe a bottom border */
+    min-height: 10px; /* Controlled by grid-template-rows */
     border-bottom: 1px solid #ddd;
-    background: #f7f7f7;
-  }
-  
-  .day-body {
+    background: #f7f7f7; /* Match header background or make distinct */
+    /* Add left border to cells below days */
+    border-left: 1px solid #eee;
+    align-self: stretch;
+}
+/* Style the first separator cell (below top-left) */
+.calendar-separator-cell:first-of-type {
+    border-left: none;
+    border-right: 1px solid #eee; /* Border between separator and first day */
+}
+/* --- END NEW --- */
+
+
+/* Style the time column (Now starting from Row 3) */
+.time-column {
+  grid-column: 1 / 2;
+  grid-row: 3 / -1;   /* <-- Start at Row 3 */
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid #eee;
+}
+
+/* Style the main day columns (Now starting from Row 3) */
+.day-column {
+  grid-row: 3 / -1; /* <-- Start at Row 3 */
+  /* grid-column is set inline in the component */
+  border-left: 1px solid #eee;
+  position: relative;
+}
+
+/* Container for the actual content area within a day column */
+.day-content-area {
     position: relative;
-    flex: 1;
-  }
-  
-  .trading-block {
-    position: absolute;
-    left: 10%;
-    width: 80%;
-    background-color: rgba(76, 175, 80, 0.6);
-    border: 1px solid #4caf50;
-    border-radius: 4px;
-  }  
+    height: 100%;
+}
+
+
+/* Style individual time slots */
+.time-slot {
+  flex: 1;
+  border-bottom: 1px solid #eee;
+  font-size: 12px;
+  padding: 4px 0 4px 4px;
+  display: flex;
+  align-items: center;
+  min-height: 25px;
+}
+.time-slot:last-child {
+ border-bottom: none;
+}
+
+/* Style the trading blocks */
+.trading-block {
+  position: absolute;
+  left: 5%;
+  width: 90%;
+  background-color: rgba(76, 175, 80, 0.6);
+  border: 1px solid #4caf50;
+  border-radius: 4px;
+  z-index: 1;
+  cursor: pointer;
+  box-sizing: border-box;
+}

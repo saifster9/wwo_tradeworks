@@ -29,38 +29,103 @@
   border-radius: 8px;
 }
 
+/* Container for the holiday form */
+.holiday-form {
+  display: flex;
+  flex-direction: column; /* Stack elements vertically */
+  align-items: center; /* Center elements horizontally */
+  gap: 10px; /* Space between form elements */
+  margin-bottom: 20px; /* Space below the form */
+  padding: 15px;
+  /* background-color: var(--light-color); */ /* Optional background */
+  /* border-radius: var(--border-radius); */
+}
 
-
+/* Style labels within the form */
 .holiday-form label {
   display: flex;
-  flex-direction: column;
+  flex-direction: column; /* Stack label text above input */
+  align-items: flex-start; /* Align label text left */
+  width: 100%;
+  max-width: 300px; /* Constrain width of inputs */
   font-size: 0.9rem;
 }
 
 .holiday-form input {
-  padding: 4px 8px;
+  width: 100%; /* Make input fill the constrained width */
+  padding: 8px;
   margin-top: 4px;
+  border: 1px solid var(--secondary-color);
+  border-radius: var(--border-radius);
 }
 
-.holiday-form button {
-  padding: 6px 12px;
+/* Apply similar styling as the delete button */
+.holiday-form button[type="submit"] {
+  width: auto; /* Let the button size itself */
+  padding: 6px 16px; /* Adjust padding for slightly larger action button */
+  font-size: 1em; /* Match default button size or adjust */
+  margin-top: 10px; /* Add some space above the button */
+  white-space: nowrap;
+  /* Inherit other button styles (background, color, border, radius, cursor, transition) */
+  /* Or explicitly define them if needed */
   background: var(--primary-color);
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: var(--border-radius);
   cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
 }
 
+.holiday-form button[type="submit"]:hover {
+   background: var(--button-hover);
+   transform: translateY(-1px);
+}
+
+/* Style the list containing existing holidays */
 .holiday-list {
-  flex-direction: row;
-  list-style: none;
+  list-style: none; /* Remove default bullet points */
   padding: 0;
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
+/* Style the list items in the holiday list */
 .holiday-list li {
-  padding: 4px 0;
-  border-bottom: 1px solid #ddd;
+  display: flex;
+  justify-content: space-between; /* Push text and button apart */
+  align-items: center; /* Vertically align text and button */
+  padding: 10px 5px; /* Add vertical and slight horizontal padding */
+  border-bottom: 1px solid var(--accent-color); /* Separator line */
+  gap: 15px; /* Add gap between text content and button */
+}
+
+/* Style the text part of the list item */
+.holiday-list li .holiday-text { /* Add class="holiday-text" to the span/div holding the text in ManageMarket.js */
+  flex-grow: 1; /* Allow text to take available space */
+  word-break: break-word; /* Allow long text to wrap */
+  text-align: left; /* Ensure text aligns left */
+}
+
+/* Style the delete button specifically within the holiday list */
+.holiday-list .delete-button {
+  width: auto; /* Let the button size itself */
+  padding: 4px 12px; /* Specific padding for delete */
+  font-size: 0.9em; /* Slightly smaller text */
+  margin-left: auto; /* Push button explicitly to the right */
+  margin-top: 0;
+  white-space: nowrap;
+  flex-shrink: 0; /* Prevent button from shrinking if text is long */
+  /* Inherit or define other button styles */
+  background: var(--primary-color);
+  color: white;
+  border: none;
+  border-radius: var(--border-radius);
+  cursor: pointer;
+  transition: background 0.3s, transform 0.2s;
+}
+
+.holiday-list .delete-button:hover {
+  background: var(--button-hover);
+  transform: translateY(-1px);
 }
 
 .delete-button {
@@ -84,4 +149,10 @@
   display: flex;
   flex-direction: row;
   font-size: 0.9rem;
+}
+
+/* Style the text part if needed (optional) */
+.holiday-list li span {
+  /* Allow text to wrap if necessary */
+  word-break: break-word;
 }
