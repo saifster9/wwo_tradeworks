@@ -6,6 +6,7 @@
   --background-color: #f3f9f1; /* Soft White */
   --text-color: #2c3e50; /* Deep Grey-Blue */
   --button-hover: #29572c; /* Darker Green */
+  --button-hover-delete: rgb(116, 0, 0); /* Dark Red for delete button */
   --shadow: 0px 5px 12px rgba(0, 0, 0, 0.15);
   --border-radius: 10px;
 }
@@ -37,8 +38,6 @@
   gap: 10px; /* Space between form elements */
   margin-bottom: 20px; /* Space below the form */
   padding: 15px;
-  /* background-color: var(--light-color); */ /* Optional background */
-  /* border-radius: var(--border-radius); */
 }
 
 /* Style labels within the form */
@@ -59,15 +58,13 @@
   border-radius: var(--border-radius);
 }
 
-/* Apply similar styling as the delete button */
+/* Style for the Add Holiday button */
 .holiday-form button[type="submit"] {
   width: auto; /* Let the button size itself */
   padding: 6px 16px; /* Adjust padding for slightly larger action button */
   font-size: 1em; /* Match default button size or adjust */
   margin-top: 10px; /* Add some space above the button */
   white-space: nowrap;
-  /* Inherit other button styles (background, color, border, radius, cursor, transition) */
-  /* Or explicitly define them if needed */
   background: var(--primary-color);
   color: white;
   border: none;
@@ -81,40 +78,55 @@
    transform: translateY(-1px);
 }
 
+
 /* Style the list containing existing holidays */
 .holiday-list {
-  list-style: none; /* Remove default bullet points */
-  padding: 0;
-  margin-top: 20px;
+    list-style: none; /* Remove default bullet points */
+    padding: 0;
+    margin-top: 20px;
 }
 
 /* Style the list items in the holiday list */
 .holiday-list li {
-  display: flex;
-  justify-content: space-between; /* Push text and button apart */
-  align-items: center; /* Vertically align text and button */
+  display: flex; /* Use flexbox for alignment */
+  align-items: center; /* Vertically align text block and button */
   padding: 10px 5px; /* Add vertical and slight horizontal padding */
   border-bottom: 1px solid var(--accent-color); /* Separator line */
-  gap: 15px; /* Add gap between text content and button */
+  /* gap: 15px; Add gap between text block and button */
 }
 
-/* Style the text part of the list item */
-.holiday-list li .holiday-text { /* Add class="holiday-text" to the span/div holding the text in ManageMarket.js */
-  flex-grow: 1; /* Allow text to take available space */
-  word-break: break-word; /* Allow long text to wrap */
-  text-align: left; /* Ensure text aligns left */
+/* Style the container holding date and description */
+.holiday-info {
+  display: flex; /* Arrange date and description inline */
+  align-items: baseline; /* Align text along the baseline */
+  flex-grow: 1; /* Allow this container to take available space */
+  gap: 8px; /* Add a small gap between date and description */
+  text-align: left;
 }
+
+/* Style the date part */
+.holiday-date {
+  /* Optional: Add specific styling like font-weight if needed */
+  /* font-weight: bold; */
+  white-space: nowrap; /* Prevent date from wrapping */
+}
+
+/* Style the description part */
+.holiday-description {
+  /* Allow text to wrap if necessary */
+  word-break: break-word;
+}
+
 
 /* Style the delete button specifically within the holiday list */
 .holiday-list .delete-button {
   width: auto; /* Let the button size itself */
   padding: 4px 12px; /* Specific padding for delete */
   font-size: 0.9em; /* Slightly smaller text */
-  margin-left: auto; /* Push button explicitly to the right */
+  /* margin-left: auto; */ /* No longer needed with flex-grow on text */
   margin-top: 0;
   white-space: nowrap;
-  flex-shrink: 0; /* Prevent button from shrinking if text is long */
-  /* Inherit or define other button styles */
+  flex-shrink: 0; /* Prevent button from shrinking */
   background: var(--primary-color);
   color: white;
   border: none;
@@ -124,27 +136,24 @@
 }
 
 .holiday-list .delete-button:hover {
-  background: var(--button-hover);
+  background: var(--button-hover-delete);
   transform: translateY(-1px);
-}
-
-.delete-button {
-  background: var(--primary-color);
-  color: white;
-  border: none;
-  cursor: pointer;
 }
 
 .clear-all {
   margin-top: 12px;
-  background: var(--error-color);
+  background: var(--primary-color);
   color: white;
   border: none;
   padding: 6px 12px;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
 }
 
+.clear-all:hover {
+  background: var(--button-hover-delete);
+  transform: translateY(-1px);
+}
 .modal-backdrop form label {
   display: flex;
   flex-direction: row;

@@ -6,6 +6,7 @@
     --background-color: #f3f9f1; /* Soft White */
     --text-color: #2c3e50; /* Deep Grey-Blue */
     --button-hover: #29572c; /* Darker Green */
+    --button-hover-delete: rgb(116, 0, 0); /* Dark Red for delete button */
     --shadow: 0px 5px 12px rgba(0, 0, 0, 0.15);
     --border-radius: 10px;
 }
@@ -58,4 +59,17 @@
     border-radius: var(--border-radius);
     font-size: 16px;
     margin: 0;
+}
+
+.delete-button {
+    background-color: var(--button-hover);
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    border-radius: var(--border-radius);
+    cursor: pointer;
+    font-size: 16px;
+}
+.delete-button:hover {
+    background-color: var(--button-hover-delete); /* Darker red on hover */
 }

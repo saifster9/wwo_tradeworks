@@ -8,6 +8,7 @@
     --button-hover: #29572c; /* Darker Green */
     --shadow: 0px 5px 12px rgba(0, 0, 0, 0.15);
     --border-radius: 10px;
+    --button-hover-delete: rgb(116, 0, 0); /* Dark Red for delete like actions */
 }
 
 .login-container {
@@ -80,7 +81,7 @@
 
   .forgot-password-row a,
   .register-row a {
-    color: var(--secondary-color); /* Use the secondary color variable */
+    color: var(--button-hover-delete); /* Use the secondary color variable */
     text-decoration: none; /* Optional: remove the default underline */
     transition: color 0.2s ease; /* Optional: smooth transition for hover */
     font-weight: bold;

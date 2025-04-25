@@ -37,3 +37,11 @@
     max-width: 350px; 
     margin: 0 auto;
 }
+
+.registration-container a {
+    color: var(--primary-color)
+}
+
+.registration-container a:hover {
+    color: var(--button-hover);
+}

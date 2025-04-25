@@ -6,7 +6,7 @@ import '../styles/new_styles.css'; // Main styles
 import '../styles/Register.css'; // Specific styles (optional)
 import '../styles/Login.css'; // Can reuse login styles for container/form
 
-// --- NEW: Helper function to format phone number ---
+// Helper function to format phone number
 const formatPhoneNumber = (value) => {
   if (!value) return value; // Return empty if no value
 
@@ -21,7 +21,6 @@ const formatPhoneNumber = (value) => {
   }
   return `${phoneNumber.slice(0, 3)}-${phoneNumber.slice(3, 6)}-${phoneNumber.slice(6, 10)}`;
 };
-// --- END: Helper function ---
 
 function Register() {
   // Form data state (phoneNumber here will store digits only)
@@ -35,7 +34,7 @@ function Register() {
   });
   // State specifically for the confirm password field
   const [confirmPassword, setConfirmPassword] = useState('');
-  // --- NEW: State for formatted phone number display ---
+  // State for formatted phone number display
   const [formattedPhoneNumber, setFormattedPhoneNumber] = useState('');
 
   // State for loading and error messages
@@ -52,7 +51,7 @@ function Register() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  // --- NEW: Specific handler for Phone Number input ---
+  // Specific handler for Phone Number input 
   const handlePhoneChange = (e) => {
      if (error) {
         setError('');
@@ -68,7 +67,6 @@ function Register() {
     // Update the formatted value for display in the input field
     setFormattedPhoneNumber(formatPhoneNumber(limitedValue));
   };
-  // --- END: Specific handler ---
 
   // Handle changes specifically for the confirm password field
   const handleConfirmPasswordChange = (e) => {
@@ -89,7 +87,6 @@ function Register() {
       setError('Passwords do not match.');
       return;
     }
-    // --- END: Check if passwords match ---
 
     // Basic password length validation example (add more if needed)
     if (formData.password.length < 6) {
@@ -101,7 +98,6 @@ function Register() {
         setError('Please enter a valid 10-digit phone number.');
         return;
     }
-    // --- END: Validate phone number length ---
 
 
     setIsLoading(true); // Set loading true only after validation passes
@@ -130,12 +126,12 @@ function Register() {
   };
 
   return (
-    <div className="login-container">
+    <div className="registration-container">
       <img src={fullLogo} alt="WWO Tradeworks Logo" style={{ maxWidth: '250px', marginBottom: '20px', display: 'block', margin: 'auto' }} />
-      <h2>Register</h2>
+      <h2>Registration</h2>
       <form onSubmit={handleSubmit} style={{ maxWidth: '400px', margin: '0 auto' }}>
 
-        {/* ... Other Fields (First Name, Last Name, Email) using handleChange ... */}
+        {/* Other Fields (First Name, Last Name, Email) using handleChange */}
          <div style={{ marginBottom: '15px' }}>
           <label htmlFor="firstName">First Name</label>
           <input id="firstName" name="firstName" placeholder="Enter first name" value={formData.firstName} onChange={handleChange} required disabled={isLoading}/>
@@ -150,7 +146,7 @@ function Register() {
         </div>
 
 
-        {/* --- UPDATED Phone Number Field --- */}
+        {/* UPDATED Phone Number Field */}
         <div style={{ marginBottom: '15px' }}>
           <label htmlFor="phoneNumber">Phone Number</label>
           <input
@@ -164,10 +160,9 @@ function Register() {
             disabled={isLoading}
           />
         </div>
-        {/* --- END: UPDATED Phone Number Field --- */}
 
 
-        {/* ... Username, Password, Confirm Password fields ... */}
+        {/* Username, Password, Confirm Password fields */}
          <div style={{ marginBottom: '15px' }}>
           <label htmlFor="username">Username</label>
           <input id="username" name="username" placeholder="Choose a username" value={formData.username} onChange={handleChange} required disabled={isLoading}/>
